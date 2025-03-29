@@ -14,6 +14,6 @@ fn main() {
             ..default()
         }).set(ImagePlugin::default_nearest()));
     
-    nanite_factory_map::register(&mut app);
+    nanite_factory_game_map::register(&mut app);
     app.run();
 }

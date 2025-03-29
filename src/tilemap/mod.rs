@@ -10,6 +10,5 @@ pub fn tilemap(app: &mut App) {
     app
         .add_plugins(TilemapPlugin)
         .add_plugins(plugins::TiledMapPlugin)
-        .add_systems(Startup, systems::startup)
-        .add_systems(Update, systems::movement);
+        .add_systems(Startup, systems::startup);
 }
