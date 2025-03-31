@@ -16,14 +16,14 @@ use std::io::{Cursor, ErrorKind};
 use std::path::Path;
 use std::sync::Arc;
 
+use bevy::ecs::event::EventWriter;
+use bevy::ecs::observer::Trigger;
+use bevy::picking::events::{Click, Pointer};
+use bevy::utils::info;
 use bevy::{
     asset::{io::Reader, AssetLoader, AssetPath},
     log,
-    prelude::{
-        Added, Asset, AssetApp, AssetEvent, AssetId, Assets, Bundle, Commands, Component,
-        DespawnRecursiveExt, Entity, EventReader, GlobalTransform, Handle, Image, Plugin, Query,
-        Res, Transform, Update,
-    },
+    prelude::*,
     reflect::TypePath,
     utils::HashMap,
 };
@@ -31,8 +31,11 @@ use bevy_ecs_tilemap::prelude::*;
 
 use thiserror::Error;
 
+use crate::common::events::TileClickEvent;
+
 use super::assets::TiledMap;
 use super::components::{TiledLayersStorage, TiledMapHandle};
+use super::observers::on_tile_click;
 
 #[derive(Default)]
 pub struct TiledMapPlugin;
@@ -177,6 +180,7 @@ pub fn process_loaded_maps(
     mut map_events: EventReader<AssetEvent<TiledMap>>,
     maps: Res<Assets<TiledMap>>,
     tile_storage_query: Query<(Entity, &TileStorage)>,
+    mut ev_click: EventWriter<TileClickEvent>,
     mut map_query: Query<(
         &TiledMapHandle,
         &mut TiledLayersStorage,
@@ -344,6 +348,7 @@ pub fn process_loaded_maps(
                                         },
                                         ..Default::default()
                                     })
+                                    .observe(on_tile_click)
                                     .id();
                                 tile_storage.set(&tile_pos, tile_entity);
                             }

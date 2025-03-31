@@ -1,47 +1,38 @@
-use bevy::prelude::*;
+use bevy::{core_pipeline::core_2d::Camera2d, ecs::system::Commands, input::{keyboard::KeyCode, mouse::MouseButton}};
+use bevy_pancam::{DirectionKeys, PanCam};
 
-// A simple camera system for moving and zooming the camera.
-#[allow(dead_code)]
-pub fn movement(
-    time: Res<Time>,
-    keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut query: Query<(&mut Transform, &mut OrthographicProjection), With<Camera>>,
-) {
-    for (mut transform, mut ortho) in query.iter_mut() {
-        let mut direction = Vec3::ZERO;
 
-        if keyboard_input.pressed(KeyCode::KeyA) {
-            direction -= Vec3::new(1.0, 0.0, 0.0);
-        }
-
-        if keyboard_input.pressed(KeyCode::KeyD) {
-            direction += Vec3::new(1.0, 0.0, 0.0);
-        }
-
-        if keyboard_input.pressed(KeyCode::KeyW) {
-            direction += Vec3::new(0.0, 1.0, 0.0);
-        }
-
-        if keyboard_input.pressed(KeyCode::KeyS) {
-            direction -= Vec3::new(0.0, 1.0, 0.0);
-        }
-
-        if keyboard_input.pressed(KeyCode::KeyZ) {
-            ortho.scale += 0.1;
-        }
-
-        if keyboard_input.pressed(KeyCode::KeyX) {
-            ortho.scale -= 0.1;
-        }
-
-        if ortho.scale < 0.5 {
-            ortho.scale = 0.5;
-        }
-
-        let z = transform.translation.z;
-        transform.translation += time.delta_secs() * direction * 500.;
-        // Important! We need to restore the Z values when moving the camera around.
-        // Bevy has a specific camera setup and this can mess with how our layers are shown.
-        transform.translation.z = z;
-    }
+pub fn setup(mut commands: Commands) {
+    commands.spawn((
+        Camera2d,
+        PanCam {
+            // which buttons should drag the camera
+            grab_buttons: vec![MouseButton::Middle], 
+            // the keyboard buttons used to move the camera
+            move_keys: DirectionKeys {
+                up:    vec![],
+                down:  vec![],
+                left:  vec![],
+                right: vec![],
+            },
+            // the speed for the keyboard movement
+            speed: 400.,
+            // when false, controls are disabled. See toggle example.
+            enabled: true,
+            // whether to zoom towards the mouse or the center of the screen
+            zoom_to_cursor: true,
+            // prevent the camera from zooming too far in
+            min_scale: 1.,
+            // prevent the camera from zooming too far out
+            max_scale: 40.,
+            // minimum x position of the camera window
+            min_x: f32::NEG_INFINITY,
+            // maximum x position of the camera window
+            max_x: f32::INFINITY,
+            // minimum y position of the camera window
+            min_y: f32::NEG_INFINITY,
+            // maximum y position of the camera window
+            max_y: f32::INFINITY,
+        },
+    ));
 }
