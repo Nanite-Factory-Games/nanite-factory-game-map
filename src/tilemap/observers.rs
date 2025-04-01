@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::common::events::TileClickEvent;
+use crate::shared::events::TileClickEvent;
 
 
 pub fn on_tile_click(

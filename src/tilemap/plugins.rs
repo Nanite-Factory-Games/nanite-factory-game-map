@@ -31,7 +31,7 @@ use bevy_ecs_tilemap::prelude::*;
 
 use thiserror::Error;
 
-use crate::common::events::TileClickEvent;
+use crate::shared::events::TileClickEvent;
 
 use super::assets::TiledMap;
 use super::components::{TiledLayersStorage, TiledMapHandle};
