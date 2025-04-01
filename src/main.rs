@@ -9,13 +9,13 @@ fn main() {
         .add_plugins(DefaultPlugins.set(WindowPlugin{
             primary_window: Some(Window {
                 title: String::from(
-                    "Tiled map editor example",
+                    "Nanite Factory Game Map",
                 ),
                 ..Default::default()
             }),
             ..default()
         }).set(ImagePlugin::default_nearest()))
-        // Should improve respinsiveness
+        // Should improve respinsiveness at the cost of performance. Should probably be removed.
         .add_plugins(QuickResponsePlugin::default().with_no_default_plugins());
 
     
