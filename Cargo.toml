@@ -16,7 +16,6 @@ bevy_ecs_tilemap = "0.15.0"
 bevy_pancam = "0.17.0"
 bevy_picking_tilemap = { git = "https://github.com/daniel-brenot/bevy_picking_tilemap.git", branch = "master" }
 bevy_quick_response = "0.3.1"
-bevy_rapier2d = "0.29.0"
 crossbeam-channel = "0.5.14"
 thiserror = "2.0.12"
 tiled = "0.14.0"

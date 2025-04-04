@@ -35,7 +35,7 @@ use crate::shared::events::TileClickEvent;
 
 use super::assets::TiledMap;
 use super::components::{TiledLayersStorage, TiledMapHandle};
-use super::observers::on_tile_click;
+use super::observers::{on_tile_click, on_tile_down, on_tile_up};
 
 #[derive(Default)]
 pub struct TiledMapPlugin;
@@ -349,6 +349,8 @@ pub fn process_loaded_maps(
                                         ..Default::default()
                                     })
                                     .observe(on_tile_click)
+                                    .observe(on_tile_down)
+                                    .observe(on_tile_up)
                                     .id();
                                 tile_storage.set(&tile_pos, tile_entity);
                             }
