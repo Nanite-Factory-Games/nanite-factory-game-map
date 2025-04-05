@@ -1,11 +1,15 @@
-use bevy::{color::palettes::css::RED, input::{mouse::MouseButtonInput, ButtonState}, prelude::*, sprite::MaterialMesh2dBundle};
+use bevy::{
+    color::palettes::css::RED,
+    input::{ButtonState, mouse::MouseButtonInput},
+    prelude::*,
+    sprite::MaterialMesh2dBundle,
+};
 use bevy_ecs_tilemap::{helpers::selection, tiles::TilePos};
-use crossbeam_channel::{unbounded, Receiver, Sender};
+use crossbeam_channel::{Receiver, Sender, unbounded};
 
 use crate::shared::events::{TileClickEvent, TileDownEvent, TileUpEvent};
 
 use super::components::{SelectionBoxDrawing, SelectionBoxMarker};
-
 
 // We want to skip when shift is pressed
 pub fn tile_click_handler(
@@ -25,10 +29,10 @@ pub fn tile_click_handler(
                 }
                 PointerButton::Secondary => {
                     println!("Secondary mouse button clicked");
-                },
+                }
                 PointerButton::Middle => {
                     println!("Middle mouse button clicked");
-                },
+                }
             }
         }
     }
@@ -57,13 +61,15 @@ pub fn draw_box_system(
     q_camera: Query<(&Camera, &GlobalTransform)>,
 ) {
     let window = windows.single();
-    
+
     // Get cursor position in world coordinates
     if let Some(cursor_pos) = window.cursor_position() {
         let window_size = Vec2::new(window.width(), window.height());
         println!("cursor_pos: {:?}", cursor_pos);
         let (camera, camera_transform) = q_camera.single();
-        let pos = camera.viewport_to_world_2d(camera_transform, cursor_pos).unwrap();
+        let pos = camera
+            .viewport_to_world_2d(camera_transform, cursor_pos)
+            .unwrap();
         box_drawing.current_pos = pos;
 
         // Handle mouse button press (start drawing)
@@ -72,19 +78,15 @@ pub fn draw_box_system(
 
             // Create the rectangle mesh
             let mesh = meshes.add(Rectangle::new(0.0, 0.0));
-            
+
             // Spawn new box entity
             commands.spawn((
-                MaterialMesh2dBundle {
-                    mesh: mesh.into(),
-                    material: bevy::prelude::MeshMaterial2d(materials.add(Color::rgba(1.0, 0.0, 0.0, 0.5))), // Red with 50% opacity
-                    transform: Transform::from_translation(pos.extend(50.0)),
-                    ..default()
-                },
+                MeshMaterial2d(materials.add(Color::srgba(1.0, 0.0, 0.0, 0.5))),
+                Mesh2d(mesh),
+                Transform::from_translation(pos.extend(50.0)),
                 SelectionBoxMarker,
             ));
         }
-
         // Handle mouse button release (stop drawing)
         else if mouse_button.just_released(MouseButton::Left) {
             box_drawing.start_pos = None;
@@ -92,12 +94,11 @@ pub fn draw_box_system(
                 commands.entity(entity).despawn();
             }
         }
-
         // Draw/update the box while holding the mouse button
         else if mouse_button.pressed(MouseButton::Left) {
             if let Some(start) = box_drawing.start_pos {
                 // Remove existing box
-                for (entity, transform, mesh ) in query.get_single_mut().iter_mut() {
+                for (entity, transform, mesh) in query.get_single_mut().iter_mut() {
                     // Calculate box properties
                     let min = Vec2::new(start.x.min(pos.x), start.y.min(pos.y));
                     let max = Vec2::new(start.x.max(pos.x), start.y.max(pos.y));
@@ -106,12 +107,10 @@ pub fn draw_box_system(
 
                     // Create the rectangle mesh
                     let new_mesh = meshes.add(Rectangle::new(size.x, size.y));
-                    
+
                     **transform = Transform::from_translation(center.extend(50.0));
                     **mesh = new_mesh.into();
                 }
-
-                
             }
         }
     }
@@ -128,14 +127,13 @@ pub fn tile_up_handler(
             match event.button {
                 PointerButton::Primary => {
                     println!("Primary mouse button released");
-
                 }
                 PointerButton::Secondary => {
                     println!("Secondary mouse button released");
-                },
+                }
                 PointerButton::Middle => {
                     println!("Middle mouse button released");
-                },
+                }
             }
         }
     }
@@ -146,9 +144,7 @@ pub fn mouse_motion_handler(
     mut events: EventReader<CursorMoved>,
     mut q_marquee: Query<(&mut SelectionBoxMarker, &mut Sprite, &mut Transform)>,
 ) {
-    
 }
-
 
 // fn spawn_selection_box(
 //     commands: &mut Commands,
