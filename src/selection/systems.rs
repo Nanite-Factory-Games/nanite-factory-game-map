@@ -9,7 +9,7 @@ use crossbeam_channel::{Receiver, Sender, unbounded};
 
 use crate::shared::events::{TileClickEvent, TileDownEvent, TileUpEvent};
 
-use super::components::{SelectionBoxDrawing, SelectionBoxMarker};
+use super::components::{ContextModalMarker, SelectionBoxDrawing, SelectionBoxMarker};
 
 // We want to skip when shift is pressed
 pub fn tile_click_handler(
@@ -65,7 +65,7 @@ pub fn draw_box_system(
     // Get cursor position in world coordinates
     if let Some(cursor_pos) = window.cursor_position() {
         let window_size = Vec2::new(window.width(), window.height());
-        println!("cursor_pos: {:?}", cursor_pos);
+        // println!("cursor_pos: {:?}", cursor_pos);
         let (camera, camera_transform) = q_camera.single();
         let pos = camera
             .viewport_to_world_2d(camera_transform, cursor_pos)
@@ -144,6 +144,23 @@ pub fn mouse_motion_handler(
     mut events: EventReader<CursorMoved>,
     mut q_marquee: Query<(&mut SelectionBoxMarker, &mut Sprite, &mut Transform)>,
 ) {
+}
+
+// Creates a hidden context modal that will be shown when the user right clicks
+pub fn setup_context_modal(mut commands: Commands) {
+    commands
+        .spawn((
+            Node {
+                width: Val::Px(100.0),
+                height: Val::Px(100.0),
+                justify_content: JustifyContent::SpaceBetween,
+                ..default()
+            },
+            BackgroundColor(Color::srgb(0.65, 0.65, 0.65)),
+            ContextModalMarker
+        )
+    )
+        .insert(PickingBehavior::IGNORE);
 }
 
 // fn spawn_selection_box(

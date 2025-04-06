@@ -43,17 +43,3 @@ pub fn on_tile_up(
         location,
     });
 }
-
-
-
-// pub fn on_tile_move(
-//     trigger: Trigger<Pointer<Move>>,
-//     mut ev_click: EventWriter<TileMoveEvent>,
-// ) {
-//     let entity = trigger.entity();
-//     let location = trigger.pointer_location.clone();
-//     ev_click.send(TileMoveEvent {
-//         entity,
-//         location,
-//     });
-// }

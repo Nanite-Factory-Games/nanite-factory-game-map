@@ -3,6 +3,8 @@ use bevy::{ecs::{component::Component, system::Resource}, math::Vec2};
 #[derive(Component)]
 pub struct SelectionBoxMarker;
 
+#[derive(Component)]
+pub struct ContextModalMarker;
 
 #[derive(Resource, Default)]
 pub struct SelectionBoxDrawing {

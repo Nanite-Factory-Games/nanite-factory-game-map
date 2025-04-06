@@ -3,6 +3,12 @@
 
 use bevy::prelude::*;
 
+mod components;
+
 pub fn entities(app: &mut App) {
+    // app
+        // prevents blurry sprites
+        // .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()));
+
 
 }

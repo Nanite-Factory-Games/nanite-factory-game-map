@@ -126,7 +126,7 @@ impl AssetLoader for TiledLoader {
                                 let tmx_dir = load_context
                                     .path()
                                     .parent()
-                                    .expect("The asset load context was empty.");
+                                    .expect("The asset load context was empty.").parent().unwrap();
                                 let tile_path = tmx_dir.join(&img.source);
                                 let asset_path = AssetPath::from(tile_path);
                                 log::info!("Loading tile image from {asset_path:?} as image ({tileset_index}, {tile_id})");
@@ -146,7 +146,9 @@ impl AssetLoader for TiledLoader {
                     let tmx_dir = load_context
                         .path()
                         .parent()
-                        .expect("The asset load context was empty.");
+                        .expect("The asset load context was empty.")
+                        .parent().unwrap();
+                    log::info!("tmx_dir: {:?}", load_context.path());
                     let tile_path = tmx_dir.join(&img.source);
                     let asset_path = AssetPath::from(tile_path);
                     let texture: Handle<Image> = load_context.load(asset_path.clone());
