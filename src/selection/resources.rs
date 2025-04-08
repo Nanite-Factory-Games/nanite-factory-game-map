@@ -1,8 +1,9 @@
 use bevy::prelude::*;
 
 
-// #[derive(Resource)]
-// pub struct SelectedEntities {
-//     pub entity: HashMap<Entity, NaniteID>,
-// }
-
+#[derive(Resource)]
+pub enum SelectionMode {
+    PlayerCharacter,
+    NPC,
+    Resource,
+}

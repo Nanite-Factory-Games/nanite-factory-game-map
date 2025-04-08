@@ -1,3 +1,5 @@
+use std::sync::Mutex;
+
 use bevy::prelude::*;
 
 use actions::actions;
@@ -15,6 +17,9 @@ mod entities;
 mod selection;
 mod tilemap;
 mod timeline;
+
+// Mutex for tracking if controls will be enabled
+static CONTROLS_ENABLED: Mutex<bool> = Mutex::new(true);
 
 pub fn register(app: &mut App) {
     app

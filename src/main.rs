@@ -1,9 +1,9 @@
 use bevy::prelude::*;
 use bevy_quick_response::QuickResponsePlugin;
 
+
 fn main() {
     let mut app = App::new();
-
     app
         // Create the window
         .add_plugins(DefaultPlugins.set(WindowPlugin{

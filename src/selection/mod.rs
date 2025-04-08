@@ -2,21 +2,24 @@ use bevy::prelude::*;
 
 use bevy_picking_tilemap::TilemapBackend;
 use components::SelectionBoxDrawing;
+use resources::SelectionMode;
 use systems::*;
+use events::*;
 
 mod components;
+mod events;
 mod resources;
 mod systems;
 
 pub fn selection(app: &mut App) {
     app
-    // Initialize the box drawing resource
+        // Initialize the box drawing resource
         .insert_resource(SelectionBoxDrawing::default())
-        .add_systems(Startup, setup_context_modal)
+        .insert_resource(SelectionMode::PlayerCharacter)
+        .add_event::<SelectionEvent>()
         .add_systems(Update, tile_click_handler)
         .add_systems(Update, tile_down_handler)
         .add_systems(Update, tile_up_handler)
-        .add_systems(Update, mouse_motion_handler)
         .add_systems(Update, draw_box_system)
         .add_plugins(TilemapBackend);
 }
