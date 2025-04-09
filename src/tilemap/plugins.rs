@@ -99,6 +99,7 @@ impl AssetLoader for TiledLoader {
             tiled::DefaultResourceCache::new(),
             BytesResourceReader::new(&bytes),
         );
+
         let map = loader.load_tmx_map(load_context.path()).map_err(|e| {
             std::io::Error::new(ErrorKind::Other, format!("Could not load TMX map: {e}"))
         })?;
@@ -155,9 +156,9 @@ impl AssetLoader for TiledLoader {
                     TilemapTexture::Single(texture.clone())
                 }
             };
-
             tilemap_textures.insert(tileset_index, tilemap_texture);
         }
+        
 
         let asset_map = TiledMap {
             map,
@@ -335,20 +336,34 @@ pub fn process_loaded_maps(
                                     #[cfg(not(feature = "atlas"))]
                                     _ => unreachable!()
                                 };
-
                                 let tile_pos = TilePos { x, y };
-                                let tile_entity = commands
-                                    .spawn(TileBundle {
-                                        position: tile_pos,
-                                        tilemap_id: TilemapId(layer_entity),
-                                        texture_index: TileTextureIndex(texture_index),
-                                        flip: TileFlip {
-                                            x: layer_tile_data.flip_h,
-                                            y: layer_tile_data.flip_v,
-                                            d: layer_tile_data.flip_d,
-                                        },
-                                        ..Default::default()
-                                    })
+                                let animation = &tileset.get_tile(texture_index).unwrap().animation;
+                                let tile_bundle = TileBundle {
+                                    position: tile_pos,
+                                    tilemap_id: TilemapId(layer_entity),
+                                    texture_index: TileTextureIndex(texture_index),
+                                    flip: TileFlip {
+                                        x: layer_tile_data.flip_h,
+                                        y: layer_tile_data.flip_v,
+                                        d: layer_tile_data.flip_d,
+                                    },
+                                    ..Default::default()
+                                };
+
+                                let mut entity_commands = if let Some(anim) = animation {
+                                    commands
+                                        .spawn((
+                                            tile_bundle,
+                                            AnimatedTile {
+                                                start: 0,
+                                                end: anim.len() as _,
+                                                speed: 0.95,
+                                            },
+                                        ))
+                                } else {
+                                    commands.spawn(tile_bundle)
+                                };
+                                let tile_entity = entity_commands
                                     .observe(on_tile_click)
                                     .observe(on_tile_down)
                                     .observe(on_tile_up)
