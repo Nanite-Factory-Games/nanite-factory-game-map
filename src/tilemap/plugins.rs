@@ -349,14 +349,13 @@ pub fn process_loaded_maps(
                                     },
                                     ..Default::default()
                                 };
-
                                 let mut entity_commands = if let Some(anim) = animation {
                                     commands
                                         .spawn((
                                             tile_bundle,
                                             AnimatedTile {
-                                                start: 0,
-                                                end: anim.len() as _,
+                                                start: anim.first().unwrap().tile_id,
+                                                end: anim.last().unwrap().tile_id,
                                                 speed: 0.95,
                                             },
                                         ))
