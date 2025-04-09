@@ -146,8 +146,7 @@ impl AssetLoader for TiledLoader {
                     let tmx_dir = load_context
                         .path()
                         .parent()
-                        .expect("The asset load context was empty.")
-                        .parent().unwrap();
+                        .expect("The asset load context was empty.");
                     log::info!("tmx_dir: {:?}", load_context.path());
                     let tile_path = tmx_dir.join(&img.source);
                     let asset_path = AssetPath::from(tile_path);
