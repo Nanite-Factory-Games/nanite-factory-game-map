@@ -22,7 +22,7 @@ pub fn setup(mut commands: Commands) {
             // whether to zoom towards the mouse or the center of the screen
             zoom_to_cursor: true,
             // prevent the camera from zooming too far in
-            min_scale: 1.,
+            min_scale: 0.1,
             // prevent the camera from zooming too far out
             max_scale: 40.,
             // minimum x position of the camera window
