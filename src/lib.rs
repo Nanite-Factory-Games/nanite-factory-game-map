@@ -3,6 +3,7 @@ use std::sync::Mutex;
 use bevy::prelude::*;
 
 use actions::actions;
+use bridge::bridge;
 use camera::camera;
 use shared::shared;
 use entities::entities;
@@ -11,6 +12,7 @@ use tilemap::tilemap;
 use timeline::timeline;
 
 mod actions;
+mod bridge;
 mod camera;
 mod shared;
 mod entities;
@@ -24,6 +26,7 @@ static CONTROLS_ENABLED: Mutex<bool> = Mutex::new(true);
 pub fn register(app: &mut App) {
     app
         .add_plugins(actions)
+        .add_plugins(bridge)
         .add_plugins(camera)
         .add_plugins(shared)
         .add_plugins(entities)
