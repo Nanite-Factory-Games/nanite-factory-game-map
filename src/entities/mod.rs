@@ -3,14 +3,17 @@
 
 use bevy::prelude::*;
 use bevy_aseprite::AsepritePlugin;
+use bevy_tweening::TweeningPlugin;
+use systems::*;
 
-mod components;
+pub mod components;
 mod systems;
 
 pub fn entities(app: &mut App) {
     app
         .add_plugins(AsepritePlugin)
-        .add_systems(Startup, systems::startup);
-
-
+        .add_plugins(TweeningPlugin)
+        .add_systems(Startup, startup)
+        .add_systems(Update, on_tickrate_change)
+        .add_systems(Update, on_player_spawned);
 }

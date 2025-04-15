@@ -1,0 +1,2 @@
+
+pub struct ControlsEnabled(bool);

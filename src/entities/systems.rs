@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{ecs::query, prelude::*};
 use bevy_aseprite::{anim::AsepriteAnimation, AsepriteBundle, AsepriteHandle};
 
 pub fn startup(
@@ -11,7 +11,23 @@ pub fn startup(
             animation: AsepriteAnimation::from("right_walk"),
             ..Default::default()
         },
-        
         Transform::from_xyz(0.0, 0.0, 80.0),
     ));
+}
+
+// We want to update animation timings if the tickrate changes so that the animations match
+pub fn on_tickrate_change(
+    mut query: Query<&mut AsepriteAnimation>,
+    time: Res<Time::<Fixed>>,
+) {
+    if !time.is_changed() || time.is_added() { return};
+    for mut animation in query.iter_mut() {
+        animation.animation_total_duration_ms = Some(time.timestep().as_millis() as u64 * 10);
+    }
+}
+
+pub fn on_player_spawned(mut query: Query<&mut Sprite, With<AsepriteAnimation>>) {
+    for mut sprite in query.iter_mut() {
+        sprite.color = Color::srgba(1.0, 1.0, 1.6, 0.6);
+    }
 }

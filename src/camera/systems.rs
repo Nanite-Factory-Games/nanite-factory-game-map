@@ -18,7 +18,7 @@ pub fn setup(mut commands: Commands) {
             // the speed for the keyboard movement
             speed: 400.,
             // when false, controls are disabled. See toggle example.
-            enabled: true,
+            enabled: false,
             // whether to zoom towards the mouse or the center of the screen
             zoom_to_cursor: true,
             // prevent the camera from zooming too far in
