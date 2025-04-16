@@ -17,7 +17,7 @@ fn main() {
     }
 
     nanite_factory_game_map::run(MapConfiguration {
-        tickrate: 60,
+        tickrate: 10,
         controls_enabled: true,
         assets,
         camera_position: Vec2::new(0., 0.),

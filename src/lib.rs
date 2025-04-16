@@ -94,7 +94,7 @@ pub fn run(configuration: MapConfiguration) {
 
     
     // Set tickrate
-    app.insert_resource(Time::<Fixed>::from_duration(Duration::from_millis(1000/(configuration.tickrate / 2))));
+    app.insert_resource(Time::<Fixed>::from_duration(Duration::from_millis(1000/(configuration.tickrate * 2))));
     // Set controls enabled
     app.insert_resource(ControlsEnabled(configuration.controls_enabled));
 
@@ -106,4 +106,6 @@ pub fn run(configuration: MapConfiguration) {
 /// Entrypoint for starting the wasm app
 #[wasm_bindgen]
 pub fn init(configuration: JsValue) {
+    let configuration_deserialized: MapConfiguration = serde_wasm_bindgen::from_value(configuration).unwrap();
+    run(configuration_deserialized);
 }

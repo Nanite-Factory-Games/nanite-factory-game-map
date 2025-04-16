@@ -11,7 +11,7 @@ pub fn startup(
             animation: AsepriteAnimation::from("right_walk"),
             ..Default::default()
         },
-        Transform::from_xyz(0.0, 0.0, 80.0),
+        Transform::from_xyz(0.0, 0.0, 48.0),
     ));
 }
 
@@ -26,8 +26,9 @@ pub fn on_tickrate_change(
     }
 }
 
-pub fn on_player_spawned(mut query: Query<&mut Sprite, With<AsepriteAnimation>>) {
-    for mut sprite in query.iter_mut() {
-        sprite.color = Color::srgba(1.0, 1.0, 1.6, 0.6);
-    }
-}
+// example of how to make player transparent
+// pub fn on_player_spawned(mut query: Query<&mut Sprite, With<AsepriteAnimation>>) {
+//     for mut sprite in query.iter_mut() {
+//         sprite.color = Color::srgba(1.0, 1.0, 1.6, 0.6);
+//     }
+// }
