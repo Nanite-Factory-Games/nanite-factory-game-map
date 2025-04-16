@@ -1,12 +1,12 @@
+
 use std::path::Path;
 use std::collections::HashMap;
-
 
 fn main() {
     // We don't want to do anything if this is targeted to wasm
     #[cfg(not(all(target_arch = "wasm32", target_os = "unknown")))]
     {
-
+        use std::collections::HashMap;
         use bevy::prelude::*;
         use nanite_factory_game_map::MapConfiguration;
         // Create a hashmap of assets to the bytes of the asset for every file in the assets folder
