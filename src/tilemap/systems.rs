@@ -1,8 +1,10 @@
 use bevy::app::App;
 use bevy::{log, prelude::*};
 use bevy_ecs_tilemap::prelude::*;
+use bevy_mod_sysfail::prelude::Log;
+use bevy_mod_sysfail::sysfail;
 use crate::shared::events::TileClickEvent;
-
+use anyhow::Context;
 use super::assets::TiledMap;
 use super::components::*;
 use super::observers::*;
@@ -17,6 +19,7 @@ pub fn startup(mut commands: Commands, asset_server: Res<AssetServer>) {
     });
 }
 
+#[sysfail(Log<anyhow::Error>)]
 pub fn process_loaded_maps(
     mut commands: Commands,
     mut map_events: EventReader<AssetEvent<TiledMap>>,
@@ -177,7 +180,7 @@ pub fn process_loaded_maps(
                                     _ => unreachable!()
                                 };
                                 let tile_pos = TilePos { x, y };
-                                let animation = &tileset.get_tile(texture_index).unwrap().animation;
+                                let animation = &tileset.get_tile(texture_index).context("The tile should exist")?.animation;
                                 let tile_bundle = TileBundle {
                                     position: tile_pos,
                                     tilemap_id: TilemapId(layer_entity),
@@ -194,8 +197,8 @@ pub fn process_loaded_maps(
                                         .spawn((
                                             tile_bundle,
                                             AnimatedTile {
-                                                start: anim.first().unwrap().tile_id,
-                                                end: anim.last().unwrap().tile_id,
+                                                start: anim.first().context("animation is empty")?.tile_id,
+                                                end: anim.last().context("animation is empty")?.tile_id,
                                                 speed: 0.95,
                                             },
                                         ))

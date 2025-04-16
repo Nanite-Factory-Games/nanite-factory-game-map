@@ -25,6 +25,10 @@ wasm-streams = "0.4.2"
 wasm-bindgen = "0.2.100"
 serde = "1.0.219"
 serde-wasm-bindgen = "0.6.5"
+bevy_mod_sysfail = { git="https://github.com/daniel-brenot/bevy_mod_sysfail.git", branch="main"}
+anyhow = "1.0.98"
+tracing-wasm = "0.2.1"
+tracing = "0.1.41"
 
 [features]
 default = ["atlas", "render"]
