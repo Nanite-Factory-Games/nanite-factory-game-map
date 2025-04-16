@@ -1,5 +1,6 @@
 use std::{collections::HashMap, hash::Hash, path::Path, sync::Mutex, time::Duration};
 
+use anyhow::Result;
 use bevy::prelude::*;
 
 use actions::actions;
@@ -107,7 +108,11 @@ pub fn run(configuration: MapConfiguration) {
 
 /// Entrypoint for starting the wasm app
 #[wasm_bindgen]
-pub fn init(configuration: JsValue) {
-    let configuration_deserialized: MapConfiguration = serde_wasm_bindgen::from_value(configuration).unwrap();
-    run(configuration_deserialized);
+pub fn start(configuration: JsValue) {
+    tracing_wasm::set_as_global_default();
+    let configuration_deserialized = serde_wasm_bindgen::from_value::<MapConfiguration>(configuration);
+    match configuration_deserialized {
+        Ok(configuration) => { run(configuration); },
+        Err(e) => { error!("Error thrown during initialization: {:?}", e); }
+    }
 }

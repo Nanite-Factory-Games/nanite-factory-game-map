@@ -6,7 +6,7 @@
   </head>
   <body>
     <script type="module">
-        import init_script, { init } from "./out/mygame.js";
+        import init, { start } from "./out/nanite-factory-game-map.js";
         // read all files in assets folder recursively and map file path to bytes
         function readAllAssets(path) {
             const assets = {};
@@ -29,8 +29,8 @@
 
             
 
-            init_script().then(()=>{
-                init({
+            init().then(()=>{
+                start({
                     tickrate: 10,
                     controls_enabled: true,
                     

@@ -1,9 +1,10 @@
 use bevy::prelude::*;
 use bevy_ecs_tilemap::tiles::TilePos;
-
+use bevy_mod_sysfail::{prelude::Log, sysfail};
 use crate::shared::{events::{TileClickEvent, TileDownEvent, TileUpEvent}, resources::ControlsEnabled};
-
+use anyhow::anyhow;
 use super::{components::{SelectionBoxDrawing, SelectionBoxMarker}, events::SelectionEvent};
+
 
 // We want to skip when shift is pressed
 pub fn tile_click_handler(
@@ -14,6 +15,7 @@ pub fn tile_click_handler(
     
 }
 
+#[sysfail(Log<anyhow::Error>)]
 pub fn tile_down_handler(
     mut commands: Commands,
     mut events: EventReader<TileDownEvent>,
@@ -24,7 +26,7 @@ pub fn tile_down_handler(
     q_window: Query<&Window>,
     q_camera: Query<(&Camera, &GlobalTransform)>,
 ) {
-    if controls_enabled.0 == false { return; }
+    if controls_enabled.0 == false { return Ok(()); }
     if let Some(event) = events.read().filter(|event| event.button == PointerButton::Primary).last() {
         let window = q_window.single();
 
@@ -34,7 +36,7 @@ pub fn tile_down_handler(
             let (camera, camera_transform) = q_camera.single();
             let pos = camera
                 .viewport_to_world_2d(camera_transform, cursor_pos)
-                .unwrap();
+                .map_err(|e| anyhow!("Could not convert cursor position to world coordinates: {:?}", e))?;
             box_drawing.current_pos = pos;
 
             box_drawing.start_pos = Some(pos);
@@ -54,6 +56,7 @@ pub fn tile_down_handler(
     }
 }
 
+#[sysfail(Log<anyhow::Error>)]
 pub fn draw_box_system(
     mut commands: Commands,
     windows: Query<&Window>,
@@ -71,7 +74,7 @@ pub fn draw_box_system(
         let (camera, camera_transform) = q_camera.single();
         let pos = camera
             .viewport_to_world_2d(camera_transform, cursor_pos)
-            .unwrap();
+            .map_err(|e| anyhow!("Could not convert cursor position to world coordinates: {:?}", e))?;
         box_drawing.current_pos = pos;
 
 

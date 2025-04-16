@@ -178,9 +178,9 @@ dependencies = [
 
 [[package]]
 name = "anyhow"
-version = "1.0.97"
+version = "1.0.98"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dcfed56ad506cb2c684a14971b8861fdc3baaaae314b9e5f9bb532cbe3ba7a4f"
+checksum = "e16d2d3311acee920a9eb8d33b8cbc1787ce4a264e85f964c2404b969bdcd487"
 
 [[package]]
 name = "approx"
@@ -923,6 +923,28 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "226f663401069ded4352ed1472a85bb1f43e2b7305d6a50e53a4f6508168e380"
 dependencies = [
  "glam",
+]
+
+[[package]]
+name = "bevy_mod_sysfail"
+version = "7.0.0"
+source = "git+https://github.com/daniel-brenot/bevy_mod_sysfail.git?branch=main#79aeb6e8fa725d8025ed0d233edc6b418ffd16b3"
+dependencies = [
+ "anyhow",
+ "bevy",
+ "bevy_ecs",
+ "bevy_mod_sysfail_macros",
+ "bevy_utils",
+]
+
+[[package]]
+name = "bevy_mod_sysfail_macros"
+version = "5.0.0"
+source = "git+https://github.com/daniel-brenot/bevy_mod_sysfail.git?branch=main#79aeb6e8fa725d8025ed0d233edc6b418ffd16b3"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.100",
 ]
 
 [[package]]
@@ -2878,9 +2900,11 @@ dependencies = [
 name = "nanite-factory-game-map"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "bevy",
  "bevy_aseprite",
  "bevy_ecs_tilemap",
+ "bevy_mod_sysfail",
  "bevy_pancam",
  "bevy_picking_tilemap",
  "bevy_quick_response",
@@ -2890,6 +2914,8 @@ dependencies = [
  "serde-wasm-bindgen",
  "thiserror 2.0.12",
  "tiled",
+ "tracing",
+ "tracing-wasm",
  "wasm-bindgen",
  "wasm-streams",
 ]
