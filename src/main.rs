@@ -22,5 +22,6 @@ fn main() {
         assets,
         camera_position: Vec2::new(0., 0.),
         follow_id: None,
+        canvas_id: None,
     });
 }

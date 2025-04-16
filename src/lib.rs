@@ -39,6 +39,7 @@ pub struct MapConfiguration {
     pub camera_position: Vec2,
     /// The id of the character entity to follow
     pub follow_id: Option<u64>,
+    pub canvas_id: Option<String>,
 }
 
 #[derive(Deserialize)]
@@ -87,6 +88,7 @@ pub fn run(configuration: MapConfiguration) {
                 title: String::from(
                     "Nanite Factory Game Map",
                 ),
+                canvas: configuration.canvas_id.clone(),
                 ..Default::default()
             }),
             ..default()
