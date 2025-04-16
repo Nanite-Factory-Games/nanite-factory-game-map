@@ -9,7 +9,7 @@ use super::observers::*;
 
 pub fn startup(mut commands: Commands, asset_server: Res<AssetServer>) {
 
-    let map_handle = TiledMapHandle(asset_server.load("1-1.tmx"));
+    let map_handle = TiledMapHandle(asset_server.load("memory://map.tmx"));
 
     commands.spawn(TiledMapBundle {
         tiled_map: map_handle,

@@ -14,8 +14,6 @@ enum FrameType {
     Action
 }
 
-pub const DEFAULT_FRAMES_PER_SECOND: u64 = 10;
-
 #[derive(Resource, Default)]
 pub struct TimelineFrame {
     // List of ids of characters that moved and their new positions
@@ -33,7 +31,6 @@ pub struct Timeline(VecDeque<TimelineFrame>);
 
 pub fn timeline(app: &mut App) {
     app
-        .insert_resource(Time::<Fixed>::from_duration(Duration::from_millis(1000/(DEFAULT_FRAMES_PER_SECOND * 2))))
         .insert_resource(Timeline(VecDeque::new()))
         .insert_resource(TimelineFrame::default())
         // This is going to get flipped immediately so we set it to movement because we want to start with action

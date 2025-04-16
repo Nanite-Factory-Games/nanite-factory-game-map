@@ -1,4 +1,4 @@
-use std::{collections::HashMap, hash::Hash, sync::Mutex};
+use std::{collections::HashMap, hash::Hash, path::Path, sync::Mutex, time::Duration};
 
 use bevy::prelude::*;
 
@@ -20,6 +20,16 @@ mod entities;
 mod selection;
 mod tilemap;
 mod timeline;
+
+use bevy::asset::io::{
+        memory::{Dir, MemoryAssetReader},
+        AssetSource, AssetSourceId,
+    };
+
+#[derive(Resource)]
+struct MemoryDir {
+    dir: Dir,
+}
 
 #[derive(Deserialize)]
 pub struct MapConfiguration {
@@ -52,8 +62,27 @@ pub fn register(app: &mut App) {
 
 pub fn run(configuration: MapConfiguration) {
     let mut app = App::new();
+    
+    // Set up memory asset reader
+    let memory_dir = MemoryDir { dir: Dir::default() };
+    let reader = MemoryAssetReader {
+        root: memory_dir.dir.clone(),
+    };
+    // Load assets into memory
+    for (path, bytes) in configuration.assets.into_iter() {
+        println!("Loading asset {}", path);
+        memory_dir.dir.insert_asset(Path::new(&path), bytes);
+    }
+
+
+    app.register_asset_source(
+        AssetSourceId::from_static("memory"),
+        AssetSource::build().with_reader(move || Box::new(reader.clone())),
+    );
+    app.insert_resource(memory_dir);
+
+    // Create the window
     app
-        // Create the window
         .add_plugins(DefaultPlugins.set(WindowPlugin{
             primary_window: Some(Window {
                 title: String::from(
@@ -63,6 +92,12 @@ pub fn run(configuration: MapConfiguration) {
             }),
             ..default()
         }).set(ImagePlugin::default_nearest()));
+
+    
+    // Set tickrate
+    app.insert_resource(Time::<Fixed>::from_duration(Duration::from_millis(1000/(configuration.tickrate / 2))));
+
+
     register(&mut app);
     app.run();
 }

@@ -7,7 +7,7 @@ pub fn startup(
 ) {
     commands.spawn((
         AsepriteBundle {
-            aseprite: AsepriteHandle(asset_server.load("player.ase")),
+            aseprite: AsepriteHandle(asset_server.load("memory://player.ase")),
             animation: AsepriteAnimation::from("right_walk"),
             ..Default::default()
         },
