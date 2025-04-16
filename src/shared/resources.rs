@@ -1,2 +1,5 @@
+use bevy::ecs::system::Resource;
 
-pub struct ControlsEnabled(bool);
+
+#[derive(Resource)]
+pub struct ControlsEnabled(pub bool);

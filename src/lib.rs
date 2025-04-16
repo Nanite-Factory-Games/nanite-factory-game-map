@@ -6,7 +6,7 @@ use actions::actions;
 use bevy_quick_response::QuickResponsePlugin;
 use camera::camera;
 use serde::Deserialize;
-use shared::shared;
+use shared::{resources::ControlsEnabled, shared};
 use entities::entities;
 use selection::selection;
 use tilemap::tilemap;
@@ -70,7 +70,6 @@ pub fn run(configuration: MapConfiguration) {
     };
     // Load assets into memory
     for (path, bytes) in configuration.assets.into_iter() {
-        println!("Loading asset {}", path);
         memory_dir.dir.insert_asset(Path::new(&path), bytes);
     }
 
@@ -96,6 +95,8 @@ pub fn run(configuration: MapConfiguration) {
     
     // Set tickrate
     app.insert_resource(Time::<Fixed>::from_duration(Duration::from_millis(1000/(configuration.tickrate / 2))));
+    // Set controls enabled
+    app.insert_resource(ControlsEnabled(configuration.controls_enabled));
 
 
     register(&mut app);

@@ -9,9 +9,7 @@ fn main() {
     let mut assets = HashMap::new();
     for entry in std::fs::read_dir("assets").unwrap() {
         let entry = entry.unwrap();
-        if entry.path().is_dir() {
-            continue;
-        }
+        if entry.path().is_dir() { continue; }
         let path = entry.path().to_path_buf();
         let path_string = path.to_str().unwrap().to_string().replace("assets/", "");
         let bytes = std::fs::read(path).unwrap();

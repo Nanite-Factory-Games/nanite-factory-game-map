@@ -1,5 +1,8 @@
-use bevy::{core_pipeline::core_2d::Camera2d, ecs::system::Commands, input::{keyboard::KeyCode, mouse::MouseButton}};
+use bevy::prelude::*;
+use bevy::{core_pipeline::core_2d::Camera2d, ecs::system::Commands, input::mouse::MouseButton};
 use bevy_pancam::{DirectionKeys, PanCam};
+
+use crate::shared::resources::ControlsEnabled;
 
 
 pub fn setup(mut commands: Commands) {
@@ -35,4 +38,15 @@ pub fn setup(mut commands: Commands) {
             max_y: f32::INFINITY,
         },
     ));
+}
+
+pub fn on_controls_enabled_change(
+    mut query: Query<&mut PanCam>,
+    controls_enabled: Res<ControlsEnabled>,
+) {
+    if controls_enabled.0 {
+        for mut pancam in query.iter_mut() {
+            pancam.enabled = true;
+        }
+    }
 }
