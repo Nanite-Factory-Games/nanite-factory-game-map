@@ -33,6 +33,7 @@ pub fn process_loaded_maps(
     )>,
     new_maps: Query<&TiledMapHandle, Added<TiledMapHandle>>,
 ) {
+    info!("process_loaded_maps");
     let mut changed_maps = Vec::<AssetId<TiledMap>>::default();
     for event in map_events.read() {
         match event {

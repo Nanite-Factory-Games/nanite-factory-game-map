@@ -2,7 +2,7 @@ use std::{io::{Cursor, ErrorKind}, path::Path, sync::Arc};
 
 use bevy::{asset::{io::Reader, AssetLoader, AssetPath}, log, prelude::*, utils::HashMap};
 use bevy_ecs_tilemap::map::TilemapTexture;
-use thiserror::Error;
+use anyhow::Context;
 
 
 struct BytesResourceReader {
@@ -36,17 +36,10 @@ pub struct TiledMap {
 
 pub struct TiledLoader;
 
-#[derive(Debug, Error)]
-pub enum TiledAssetLoaderError {
-    /// An [IO](std::io) Error
-    #[error("Could not load Tiled file: {0}")]
-    Io(#[from] std::io::Error),
-}
-
 impl AssetLoader for TiledLoader {
     type Asset = TiledMap;
     type Settings = ();
-    type Error = TiledAssetLoaderError;
+    type Error = anyhow::Error;
 
     async fn load(
         &self,
@@ -61,7 +54,6 @@ impl AssetLoader for TiledLoader {
             tiled::DefaultResourceCache::new(),
             BytesResourceReader::new(&bytes),
         );
-
         let map = loader.load_tmx_map(load_context.path()).map_err(|e| {
             std::io::Error::new(ErrorKind::Other, format!("Could not load TMX map: {e}"))
         })?;
@@ -80,11 +72,15 @@ impl AssetLoader for TiledLoader {
                     let tmx_dir = load_context
                         .path()
                         .parent()
-                        .expect("The asset load context was empty.");
-                    log::info!("tmx_dir: {:?}", load_context.path());
-                    let tile_path = tmx_dir.join(&img.source);
-                    let asset_path = AssetPath::from(tile_path);
-                    let texture: Handle<Image> = load_context.load(asset_path.clone());
+                        .context("The asset load context was empty.")?
+                        .to_str()
+                        .context("The asset load context was empty.")?
+                        .to_string();
+                    log::info!("tmx_dir: {:?}", tmx_dir);
+                    let image_source = img.source.to_str().context("The image source was empty.")?.to_string();
+                    let tile_path = format!("memory://{}{}", tmx_dir, image_source);
+                    log::info!("tile_path: {:?}", tile_path);
+                    let texture: Handle<Image> = load_context.load(tile_path);
 
                     TilemapTexture::Single(texture.clone())
                 }

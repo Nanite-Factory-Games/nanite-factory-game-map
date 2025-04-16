@@ -7,27 +7,11 @@
   <body>
     <script type="module">
         import init, { start } from "./out/nanite-factory-game-map.js";
-        // read all files in assets folder recursively and map file path to bytes
-        function readAllAssets(path) {
-            const assets = {};
-            const files = fs.readdirSync(path);
-            for (const file of files) {
-                const filePath = path + "/" + file;
-                if (fs.statSync(filePath).isDirectory()) {
-                    assets[file] = readAllAssets(filePath);
-                } else {
-                    assets[file] = fs.readFileSync(filePath);
-                }
-            }
-            return assets;
-        }
-        
         
         (async () => {
-            // get every asset from the assets folder and map its path to the bytes for the file
-            const assets = {};
-
-            
+            let res = await fetch('./out/assets.json');
+            let assets = (await res.json());
+            console.dir(assets);
 
             init().then(()=>{
                 start({
