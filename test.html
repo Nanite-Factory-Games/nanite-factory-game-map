@@ -3,11 +3,10 @@
   <head>
     <meta charset="UTF-8">
     <title>Hello wasm-pack!</title>
-  </head>
-  <body>
     <script type="module">
         import init, { start } from "./out/nanite-factory-game-map.js";
         
+        window.onload = () => {
         (async () => {
             let res = await fetch('./out/assets.json');
             let assets = (await res.json());
@@ -23,12 +22,14 @@
                     follow_id: null,
                     canvas_id: "#canvas",
                 });
-            })
+            });
         })();
+    }
         
         
 
     </script>
-
-    <canvas id="canvas" width="800" height="600"></canvas>
+  </head>
+  <body>
+    <canvas id="canvas" width="800" height="600" style="border: 1px solid black"></canvas>
   </body>

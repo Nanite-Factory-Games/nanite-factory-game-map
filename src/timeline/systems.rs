@@ -1,6 +1,4 @@
-use anyhow::Context;
 use bevy::prelude::*;
-use bevy_mod_sysfail::{prelude::Log, sysfail};
 use crate::entities::components::{CharacterEntity, PlayerCharacterMarker};
 
 use super::{FrameType, Timeline, TimelineFrame};
@@ -16,14 +14,13 @@ pub fn alternate_frame(
 }
 
 // Grabs the most recent frame and sets it as the current frame
-#[sysfail(Log<anyhow::Error>)]
 pub fn advance_timeline(
     mut timeline: ResMut<Timeline>,
     frame_type: Res<FrameType>,
     mut current_frame: ResMut<TimelineFrame>
 ) {
-    if *frame_type != FrameType::Action { return Ok(()); }
-    let new_frame = timeline.0.pop_front().context("timeline is empty")?;
+    if *frame_type != FrameType::Action { return }
+    let new_frame = timeline.0.pop_front().unwrap();
     *current_frame = new_frame;
 }
 

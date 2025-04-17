@@ -926,28 +926,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "bevy_mod_sysfail"
-version = "7.0.0"
-source = "git+https://github.com/daniel-brenot/bevy_mod_sysfail.git?branch=main#79aeb6e8fa725d8025ed0d233edc6b418ffd16b3"
-dependencies = [
- "anyhow",
- "bevy",
- "bevy_ecs",
- "bevy_mod_sysfail_macros",
- "bevy_utils",
-]
-
-[[package]]
-name = "bevy_mod_sysfail_macros"
-version = "5.0.0"
-source = "git+https://github.com/daniel-brenot/bevy_mod_sysfail.git?branch=main#79aeb6e8fa725d8025ed0d233edc6b418ffd16b3"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.100",
-]
-
-[[package]]
 name = "bevy_pancam"
 version = "0.17.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2904,7 +2882,6 @@ dependencies = [
  "bevy",
  "bevy_aseprite",
  "bevy_ecs_tilemap",
- "bevy_mod_sysfail",
  "bevy_pancam",
  "bevy_picking_tilemap",
  "bevy_quick_response",
@@ -2914,7 +2891,6 @@ dependencies = [
  "serde-wasm-bindgen",
  "thiserror 2.0.12",
  "tiled",
- "tracing",
  "tracing-wasm",
  "wasm-bindgen",
  "wasm-streams",

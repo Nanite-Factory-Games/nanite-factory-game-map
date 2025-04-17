@@ -1,7 +1,6 @@
 use std::{collections::HashMap, hash::Hash, path::Path, sync::Mutex, time::Duration};
 
-use anyhow::Result;
-use bevy::prelude::*;
+use bevy::{prelude::*, utils::info};
 
 use actions::actions;
 use bevy_quick_response::QuickResponsePlugin;
@@ -86,9 +85,6 @@ pub fn run(configuration: MapConfiguration) {
     app
         .add_plugins(DefaultPlugins.set(WindowPlugin{
             primary_window: Some(Window {
-                title: String::from(
-                    "Nanite Factory Game Map",
-                ),
                 canvas: configuration.canvas_id.clone(),
                 ..Default::default()
             }),
@@ -110,6 +106,7 @@ pub fn run(configuration: MapConfiguration) {
 #[wasm_bindgen]
 pub fn start(configuration: JsValue) {
     tracing_wasm::set_as_global_default();
+    info!("Starting");
     let configuration_deserialized = serde_wasm_bindgen::from_value::<MapConfiguration>(configuration);
     match configuration_deserialized {
         Ok(configuration) => { run(configuration); },

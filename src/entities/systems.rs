@@ -5,14 +5,14 @@ pub fn startup(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
 ) {
-    commands.spawn((
-        AsepriteBundle {
-            aseprite: AsepriteHandle(asset_server.load("memory://player.ase")),
-            animation: AsepriteAnimation::from("right_walk"),
-            ..Default::default()
-        },
-        Transform::from_xyz(0.0, 0.0, 48.0),
-    ));
+    // commands.spawn((
+    //     AsepriteBundle {
+    //         aseprite: AsepriteHandle(asset_server.load("memory://player.ase")),
+    //         animation: AsepriteAnimation::from("right_walk"),
+    //         ..Default::default()
+    //     },
+    //     Transform::from_xyz(0.0, 0.0, 48.0),
+    // ));
 }
 
 // We want to update animation timings if the tickrate changes so that the animations match
