@@ -1,30 +1,34 @@
 use std::{collections::HashMap, hash::Hash, path::Path, sync::Mutex, time::Duration};
 
-use bevy::{prelude::*, utils::info};
+use bevy::{
+    prelude::*,
+    utils::{info, tracing},
+};
 
 use actions::actions;
 use bevy_quick_response::QuickResponsePlugin;
 use camera::camera;
-use serde::Deserialize;
-use shared::{resources::ControlsEnabled, shared};
 use entities::entities;
 use selection::selection;
+use serde::Deserialize;
+use shared::{resources::ControlsEnabled, shared};
 use tilemap::tilemap;
 use timeline::timeline;
-use wasm_bindgen::{prelude::wasm_bindgen, JsObject, JsValue};
+use tracing_wasm::WASMLayerConfigBuilder;
+use wasm_bindgen::{JsObject, JsValue, prelude::wasm_bindgen};
 
 mod actions;
 mod camera;
-mod shared;
 mod entities;
 mod selection;
+mod shared;
 mod tilemap;
 mod timeline;
 
 use bevy::asset::io::{
-        memory::{Dir, MemoryAssetReader},
-        AssetSource, AssetSourceId,
-    };
+    AssetSource, AssetSourceId,
+    memory::{Dir, MemoryAssetReader},
+};
 
 #[derive(Resource)]
 struct MemoryDir {
@@ -51,8 +55,7 @@ pub struct MapConfigurationUpdate {
 }
 
 pub fn register(app: &mut App) {
-    app
-        .add_plugins(actions)
+    app.add_plugins(actions)
         .add_plugins(camera)
         .add_plugins(shared)
         .add_plugins(entities)
@@ -63,9 +66,11 @@ pub fn register(app: &mut App) {
 
 pub fn run(configuration: MapConfiguration) {
     let mut app = App::new();
-    
+
     // Set up memory asset reader
-    let memory_dir = MemoryDir { dir: Dir::default() };
+    let memory_dir = MemoryDir {
+        dir: Dir::default(),
+    };
     let reader = MemoryAssetReader {
         root: memory_dir.dir.clone(),
     };
@@ -74,7 +79,6 @@ pub fn run(configuration: MapConfiguration) {
         memory_dir.dir.insert_asset(Path::new(&path), bytes);
     }
 
-
     app.register_asset_source(
         AssetSourceId::from_static("memory"),
         AssetSource::build().with_reader(move || Box::new(reader.clone())),
@@ -82,21 +86,24 @@ pub fn run(configuration: MapConfiguration) {
     app.insert_resource(memory_dir);
 
     // Create the window
-    app
-        .add_plugins(DefaultPlugins.set(WindowPlugin{
-            primary_window: Some(Window {
-                canvas: configuration.canvas_id.clone(),
-                ..Default::default()
-            }),
-            ..default()
-        }).set(ImagePlugin::default_nearest()));
+    app.add_plugins(
+        DefaultPlugins
+            .set(WindowPlugin {
+                primary_window: Some(Window {
+                    canvas: configuration.canvas_id.clone(),
+                    ..Default::default()
+                }),
+                ..default()
+            })
+            .set(ImagePlugin::default_nearest()),
+    );
 
-    
     // Set tickrate
-    app.insert_resource(Time::<Fixed>::from_duration(Duration::from_millis(1000/(configuration.tickrate * 2))));
+    app.insert_resource(Time::<Fixed>::from_duration(Duration::from_millis(
+        1000 / (configuration.tickrate * 2),
+    )));
     // Set controls enabled
     app.insert_resource(ControlsEnabled(configuration.controls_enabled));
-
 
     register(&mut app);
     app.run();
@@ -105,10 +112,18 @@ pub fn run(configuration: MapConfiguration) {
 /// Entrypoint for starting the wasm app
 #[wasm_bindgen]
 pub fn start(configuration: JsValue) {
-    tracing_wasm::set_as_global_default();
-    let configuration_deserialized = serde_wasm_bindgen::from_value::<MapConfiguration>(configuration);
+    let config = WASMLayerConfigBuilder::new()
+        .set_max_level(tracing::Level::INFO)
+        .build();
+    tracing_wasm::set_as_global_default_with_config(config);
+    let configuration_deserialized =
+        serde_wasm_bindgen::from_value::<MapConfiguration>(configuration);
     match configuration_deserialized {
-        Ok(configuration) => { run(configuration); },
-        Err(e) => { error!("Error thrown during initialization: {:?}", e); }
+        Ok(configuration) => {
+            run(configuration);
+        }
+        Err(e) => {
+            error!("Error thrown during initialization: {:?}", e);
+        }
     }
 }
