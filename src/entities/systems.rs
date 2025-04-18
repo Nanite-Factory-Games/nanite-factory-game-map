@@ -8,9 +8,9 @@ pub fn startup(
     commands.spawn((
         AseSpriteAnimation {
             aseprite: asset_server.load("player.aseprite"),
-            animation: Animation::tag("walk_right"),
+            animation: Animation::tag("idle_down"),
         },
-        Transform::from_xyz(0.0, 0.0, 48.0),
+        Transform::from_xyz((238.0 * 16.0), (250.0 * 16.0), 48.0),
     ));
 }
 

@@ -60,9 +60,8 @@ pub fn process_loaded_maps(
     for changed_map in changed_maps.iter() {
         for (map_handle, mut layer_storage, render_settings) in map_query.iter_mut() {
             // only deal with currently changed map
-            if map_handle.0.id() != *changed_map {
-                continue;
-            }
+            if map_handle.0.id() != *changed_map { continue; }
+
             if let Some(tiled_map) = maps.get(&map_handle.0) {
                 // TODO: Create a RemoveMap component..
                 for layer_entity in layer_storage.storage.values() {
@@ -216,12 +215,7 @@ pub fn process_loaded_maps(
                             texture: tilemap_texture.clone(),
                             tile_size,
                             spacing: tile_spacing,
-                            transform: get_tilemap_center_transform(
-                                &map_size,
-                                &grid_size,
-                                &map_type,
-                                layer_index as f32,
-                            ) * Transform::from_xyz(offset_x, -offset_y, 0.0),
+                            transform: Transform::from_xyz(0.0, 0.0, 0.0),
                             map_type,
                             render_settings: *render_settings,
                             ..Default::default()
@@ -235,7 +229,7 @@ pub fn process_loaded_maps(
                 info!("Inserting tiles");
                 commands.insert_or_spawn_batch(animated_tiles.into_boxed_slice().into_iter());
                 commands.insert_or_spawn_batch(unanimated_tiles.into_boxed_slice().into_iter());
-                info!("Inserted tiles");
+                info!("Inserted tiles"); 
             }
         }
     }
