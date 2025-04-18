@@ -10,7 +10,6 @@
         (async () => {
             let res = await fetch('./out/assets.json');
             let assets = (await res.json());
-            console.dir(assets);
 
             init().then(()=>{
                 start({

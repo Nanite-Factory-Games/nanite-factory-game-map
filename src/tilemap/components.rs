@@ -14,7 +14,6 @@ pub struct TiledMapBundle {
     pub render_settings: TilemapRenderSettings,
 }
 
-
 // Stores a list of tiled layers.
 #[derive(Component, Default)]
 pub struct TiledLayersStorage {

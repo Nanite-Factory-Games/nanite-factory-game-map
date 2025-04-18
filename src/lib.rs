@@ -106,7 +106,6 @@ pub fn run(configuration: MapConfiguration) {
 #[wasm_bindgen]
 pub fn start(configuration: JsValue) {
     tracing_wasm::set_as_global_default();
-    info!("Starting");
     let configuration_deserialized = serde_wasm_bindgen::from_value::<MapConfiguration>(configuration);
     match configuration_deserialized {
         Ok(configuration) => { run(configuration); },

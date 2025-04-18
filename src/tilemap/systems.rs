@@ -1,4 +1,6 @@
 use bevy::app::App;
+use bevy::ecs::entity;
+use bevy::utils::info;
 use bevy::{log, prelude::*};
 use bevy_ecs_tilemap::prelude::*;
 use crate::shared::events::TileClickEvent;
@@ -22,7 +24,6 @@ pub fn process_loaded_maps(
     mut map_events: EventReader<AssetEvent<TiledMap>>,
     maps: Res<Assets<TiledMap>>,
     tile_storage_query: Query<(Entity, &TileStorage)>,
-    mut ev_click: EventWriter<TileClickEvent>,
     mut map_query: Query<(
         &TiledMapHandle,
         &mut TiledLayersStorage,
@@ -30,7 +31,6 @@ pub fn process_loaded_maps(
     )>,
     new_maps: Query<&TiledMapHandle, Added<TiledMapHandle>>,
 ) {
-    info!("process_loaded_maps");
     let mut changed_maps = Vec::<AssetId<TiledMap>>::default();
     for event in map_events.read() {
         match event {
@@ -73,6 +73,11 @@ pub fn process_loaded_maps(
                     }
                     // commands.entity(*layer_entity).despawn_recursive();
                 }
+                info!("Allocating space for tiles");
+
+                let mut animated_tiles: Vec<(Entity, (TileBundle, AnimatedTile))> = Vec::with_capacity((tiled_map.map.width*tiled_map.map.height) as _);
+                let mut unanimated_tiles: Vec<(Entity, TileBundle)> = Vec::with_capacity((tiled_map.map.width*tiled_map.map.height*2) as _);
+                info!("Allocated space for tiles");
 
                 // The TilemapBundle requires that all tile images come exclusively from a single
                 // tiled texture or from a Vec of independent per-tile images. Furthermore, all of
@@ -96,6 +101,9 @@ pub fn process_loaded_maps(
                         y: tileset.spacing as f32,
                     };
 
+                    
+
+
                     // Once materials have been created/added we need to then create the layers.
                     for (layer_index, layer) in tiled_map.map.layers().enumerate() {
                         let offset_x = layer.offset_x;
@@ -117,6 +125,7 @@ pub fn process_loaded_maps(
                             continue;
                         };
 
+                        
                         let map_size = TilemapSize {
                             x: tiled_map.map.width,
                             y: tiled_map.map.height,
@@ -128,16 +137,10 @@ pub fn process_loaded_maps(
                         };
 
                         let map_type = match tiled_map.map.orientation {
-                            tiled::Orientation::Hexagonal => {
-                                TilemapType::Hexagon(HexCoordSystem::Row)
-                            }
-                            tiled::Orientation::Isometric => {
-                                TilemapType::Isometric(IsoCoordSystem::Diamond)
-                            }
-                            tiled::Orientation::Staggered => {
-                                TilemapType::Isometric(IsoCoordSystem::Staggered)
-                            }
-                            tiled::Orientation::Orthogonal => TilemapType::Square,
+                            tiled::Orientation::Hexagonal => TilemapType::Hexagon(HexCoordSystem::Row),
+                            tiled::Orientation::Isometric => TilemapType::Isometric(IsoCoordSystem::Diamond),
+                            tiled::Orientation::Staggered => TilemapType::Isometric(IsoCoordSystem::Staggered),
+                            tiled::Orientation::Orthogonal => TilemapType::Square
                         };
 
                         let mut tile_storage = TileStorage::empty(map_size);
@@ -168,15 +171,7 @@ pub fn process_loaded_maps(
                                         }
                                     };
 
-                                let texture_index = match tilemap_texture {
-                                    TilemapTexture::Single(_) => layer_tile.id(),
-                                    #[cfg(not(feature = "atlas"))]
-                                    TilemapTexture::Vector(_) =>
-                                        *tiled_map.tile_image_offsets.get(&(tileset_index, layer_tile.id()))
-                                        .expect("The offset into to image vector should have been saved during the initial load."),
-                                    #[cfg(not(feature = "atlas"))]
-                                    _ => unreachable!()
-                                };
+                                let texture_index = layer_tile.id();
                                 let tile_pos = TilePos { x, y };
                                 let animation = &tileset.get_tile(texture_index).unwrap().animation;
                                 let tile_bundle = TileBundle {
@@ -190,27 +185,29 @@ pub fn process_loaded_maps(
                                     },
                                     ..Default::default()
                                 };
-                                let mut entity_commands = if let Some(anim) = animation {
-                                    commands
-                                        .spawn((
-                                            tile_bundle,
-                                            AnimatedTile {
-                                                start: anim.first().unwrap().tile_id,
-                                                end: anim.last().unwrap().tile_id,
-                                                speed: 0.95,
-                                            },
-                                        ))
-                                } else {
-                                    commands.spawn(tile_bundle)
-                                };
-                                let tile_entity = entity_commands
-                                    .observe(on_tile_click)
-                                    .observe(on_tile_down)
-                                    .observe(on_tile_up)
+
+                                let entity = commands
+                                    .spawn_empty()
+                                    // .observe(on_tile_click)
+                                    // .observe(on_tile_down)
+                                    // .observe(on_tile_up)
                                     .id();
-                                tile_storage.set(&tile_pos, tile_entity);
+                                match animation {
+                                    Some(anim) => {
+                                        animated_tiles.push((entity, (tile_bundle, AnimatedTile {
+                                            start: anim.first().unwrap().tile_id,
+                                            end: anim.last().unwrap().tile_id,
+                                            speed: 1.0,
+                                        })));
+                                    }
+                                    None => {
+                                        unanimated_tiles.push((entity, tile_bundle));
+                                    }
+                                }
+                                tile_storage.set(&tile_pos, entity);
                             }
                         }
+                        
 
                         commands.entity(layer_entity).insert(TilemapBundle {
                             grid_size,
@@ -235,6 +232,10 @@ pub fn process_loaded_maps(
                             .insert(layer_index as u32, layer_entity);
                     }
                 }
+                info!("Inserting tiles");
+                commands.insert_or_spawn_batch(animated_tiles.into_boxed_slice().into_iter());
+                commands.insert_or_spawn_batch(unanimated_tiles.into_boxed_slice().into_iter());
+                info!("Inserted tiles");
             }
         }
     }

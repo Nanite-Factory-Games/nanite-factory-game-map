@@ -2,7 +2,7 @@
 
 
 use bevy::prelude::*;
-use bevy_aseprite::AsepritePlugin;
+use bevy_aseprite_ultra::AsepriteUltraPlugin;
 use bevy_tweening::TweeningPlugin;
 use systems::*;
 
@@ -11,8 +11,8 @@ mod systems;
 
 pub fn entities(app: &mut App) {
     app
-        .add_plugins(AsepritePlugin)
+        .add_plugins(AsepriteUltraPlugin)
         .add_plugins(TweeningPlugin)
-        .add_systems(Startup, startup)
-        .add_systems(Update, on_tickrate_change);
+        .add_systems(Startup, startup);
+        // .add_systems(Update, on_tickrate_change);
 }
