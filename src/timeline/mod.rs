@@ -1,5 +1,6 @@
 // This module will handle tracking and executing the timeline of the game
 use bevy::{prelude::*};
+use serde::Deserialize;
 use std::{collections::{HashMap, VecDeque}, time::Duration};
 
 use run_conditions::*;
@@ -14,7 +15,7 @@ enum FrameType {
     Action
 }
 
-#[derive(Resource, Default)]
+#[derive(Resource, Default, Deserialize)]
 pub struct TimelineFrame {
     // List of ids of characters that moved and their new positions
     character_movements: HashMap<usize, Vec2>,
@@ -35,6 +36,7 @@ pub fn timeline(app: &mut App) {
         .insert_resource(TimelineFrame::default())
         // This is going to get flipped immediately so we set it to movement because we want to start with action
         .insert_resource(FrameType::Movement)
+        .add_systems(Update, consume_timeline)
         .add_systems(FixedUpdate, alternate_frame.run_if(frame_available))
         .add_systems(FixedUpdate, advance_timeline.after(alternate_frame))
         .add_systems(FixedUpdate, (

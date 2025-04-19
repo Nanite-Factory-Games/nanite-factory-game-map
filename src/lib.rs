@@ -13,7 +13,7 @@ use selection::selection;
 use serde::Deserialize;
 use shared::{resources::ControlsEnabled, shared};
 use tilemap::tilemap;
-use timeline::timeline;
+use timeline::{timeline, TimelineFrame};
 use tracing_wasm::WASMLayerConfigBuilder;
 use wasm_bindgen::{JsObject, JsValue, prelude::wasm_bindgen};
 
@@ -23,7 +23,7 @@ mod entities;
 mod selection;
 mod shared;
 mod tilemap;
-mod timeline;
+pub mod timeline;
 
 use bevy::asset::io::{
     AssetSource, AssetSourceId,
@@ -34,6 +34,9 @@ use bevy::asset::io::{
 struct MemoryDir {
     dir: Dir,
 }
+
+#[derive(Resource)]
+struct FrameReceiver(crossbeam_channel::Receiver<TimelineFrame>);
 
 #[derive(Deserialize)]
 pub struct MapConfiguration {
@@ -54,6 +57,9 @@ pub struct MapConfigurationUpdate {
     pub camera_position: Option<Vec2>,
 }
 
+// Staric crossbeam channel sender
+static FRAME_SENDER: Mutex<Option<crossbeam_channel::Sender<TimelineFrame>>> = Mutex::new(None);
+
 pub fn register(app: &mut App) {
     app.add_plugins(actions)
         .add_plugins(camera)
@@ -64,7 +70,7 @@ pub fn register(app: &mut App) {
         .add_plugins(timeline);
 }
 
-pub fn run(configuration: MapConfiguration) {
+pub fn run(configuration: MapConfiguration, frame_receiver: crossbeam_channel::Receiver<TimelineFrame>) {
     let mut app = App::new();
 
     // Set up memory asset reader
@@ -84,6 +90,10 @@ pub fn run(configuration: MapConfiguration) {
         AssetSource::build().with_reader(move || Box::new(reader.clone())),
     );
     app.insert_resource(memory_dir);
+
+    // Set up the frame receiver
+    let frame_receiver = FrameReceiver(frame_receiver);
+    app.insert_resource(frame_receiver);
 
     // Create the window
     app.add_plugins(
@@ -112,18 +122,39 @@ pub fn run(configuration: MapConfiguration) {
 /// Entrypoint for starting the wasm app
 #[wasm_bindgen]
 pub fn start(configuration: JsValue) {
+    // Setup tracing for propper logging levels
     let config = WASMLayerConfigBuilder::new()
         .set_max_level(tracing::Level::INFO)
         .build();
     tracing_wasm::set_as_global_default_with_config(config);
-    let configuration_deserialized =
-        serde_wasm_bindgen::from_value::<MapConfiguration>(configuration);
-    match configuration_deserialized {
-        Ok(configuration) => {
-            run(configuration);
-        }
+
+    // Set up the frame sender
+    let (sender, receiver) = crossbeam_channel::unbounded::<TimelineFrame>();
+    let mut frame_sender_lock = FRAME_SENDER.lock().unwrap();
+    *frame_sender_lock = Some(sender);
+
+    // Deserialize the configuration and run the game
+    match serde_wasm_bindgen::from_value::<MapConfiguration>(configuration) {
+        Ok(configuration) => { run(configuration, receiver); }
         Err(e) => {
             error!("Error thrown during initialization: {:?}", e);
+        }
+    }
+}
+
+#[wasm_bindgen]
+pub fn submit_timeline_frame(frame: JsValue) {
+    match serde_wasm_bindgen::from_value::<TimelineFrame>(frame) {
+        Ok(frame) => {
+            // Don't freak out, this is probably not an issue
+            let frame_sender_lock = FRAME_SENDER.lock().unwrap();
+            frame_sender_lock.as_ref()
+                .expect("Frame sender not initialized")
+                .send(frame)
+                .unwrap();
+        }
+        Err(e) => {
+            error!("Error thrown when deserializing timeline frame: {:?}", e);
         }
     }
 }

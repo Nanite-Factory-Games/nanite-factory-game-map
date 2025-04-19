@@ -215,7 +215,7 @@ pub fn process_loaded_maps(
                             texture: tilemap_texture.clone(),
                             tile_size,
                             spacing: tile_spacing,
-                            transform: Transform::from_xyz(0.0, 0.0, 0.0),
+                            transform: Transform::from_xyz(0.0, 0.0, layer_index as f32),
                             map_type,
                             render_settings: *render_settings,
                             ..Default::default()

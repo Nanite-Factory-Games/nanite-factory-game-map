@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use crate::entities::components::{CharacterEntity, PlayerCharacterMarker};
+use crate::{entities::components::{CharacterEntity, PlayerCharacterMarker}, FrameReceiver};
 
 use super::{FrameType, Timeline, TimelineFrame};
 
@@ -22,6 +22,14 @@ pub fn advance_timeline(
     if *frame_type != FrameType::Action { return }
     let new_frame = timeline.0.pop_front().unwrap();
     *current_frame = new_frame;
+}
+
+/// Grabs all frames from the timeline frame sender and adds them to the timeline
+pub fn consume_timeline(
+    mut timeline: ResMut<Timeline>,
+    mut timeline_receiver: ResMut<FrameReceiver>,
+) {
+    timeline.0.extend(timeline_receiver.0.try_iter());
 }
 
 pub fn move_characters(

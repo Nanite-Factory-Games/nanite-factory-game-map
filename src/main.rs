@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use bevy::prelude::*;
-use nanite_factory_game_map::MapConfiguration;
+use nanite_factory_game_map::{timeline::TimelineFrame, MapConfiguration};
 use std::path::Path;
 
 fn main() {
@@ -14,6 +14,7 @@ fn main() {
         // Create a hashmap of assets to the bytes of the asset for every file in the assets folder
         let mut assets = HashMap::new();
         get_assets_recursively(Path::new("assets"), &mut assets);
+        let (sender, receiver) = crossbeam_channel::unbounded::<TimelineFrame>();
 
         nanite_factory_game_map::run(MapConfiguration {
             tickrate: 10,
@@ -22,7 +23,7 @@ fn main() {
             camera_position: Vec2::new(0., 0.),
             follow_id: None,
             canvas_id: None,
-        });
+        }, receiver);
     }
 }
 #[cfg(not(all(target_arch = "wasm32", target_os = "unknown")))]
