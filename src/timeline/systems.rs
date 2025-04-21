@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use bevy::log::info;
-use crate::{entities::components::{CharacterEntity, PlayerCharacterMarker}, FrameReceiver, LoopTimeline };
+use bevy_aseprite_ultra::prelude::{Animation, AseSpriteAnimation};
+use crate::{entities::{components::{CharacterEntity, PlayerCharacterMarker}, resources::EntityIdMap}, FrameReceiver, LoopTimeline };
 
 use super::{resources::{FrameType, LoopTimelineIndex, TimelineFrame}, Timeline};
 
@@ -28,7 +29,6 @@ pub fn advance_timeline(
         if loop_timeline_index.0 >= timeline.0.len() {
             loop_timeline_index.0 = 0;
         }
-        info!("timeline frame {}", loop_timeline_index.0);
         if let Some(frame) = timeline.0.get(loop_timeline_index.0) {
             *current_frame = frame.clone();
         }
@@ -48,11 +48,38 @@ pub fn consume_timeline(
 
 pub fn move_characters(
     mut commands: Commands,
-    mut current_frame: Res<TimelineFrame>,
+    current_frame: Res<TimelineFrame>,
+    mut character_entity_map: ResMut<EntityIdMap>,
+    asset_server: Res<AssetServer>,
     frame_type: Res<FrameType>,
-    mut query: Query<(&CharacterEntity, &Transform), With<PlayerCharacterMarker>>,
 ) {
     if *frame_type != FrameType::Movement { return } 
+    // A few things we'll need to do.
+    // first we'll need to find all the new entities that need to be spawned
+    // Then we'll need to move all the entities that already exist
+
+    let character_map = &mut character_entity_map.0;
+
+    current_frame.character_movements.iter().for_each(|(id, position)| {
+        if let Some(entity) = character_map.get(id) {
+            info!("moving character {} to {}", id, position);
+            commands.entity(*entity).insert(Transform::from_translation(position.extend(1.0) * Vec3::new(16., 16., 49.0)));
+        } else {
+            info!("spawning character {} at {}", id, position);
+            let entity = commands.spawn((
+                Transform::from_translation(position.extend(1.0) * Vec3::new(16., 16., 49.0)),
+                CharacterEntity {
+                    name: format!("character_{}", id),
+                    id: *id
+                },
+                AseSpriteAnimation {
+                    aseprite: asset_server.load("player.aseprite"),
+                    animation: Animation::tag("idle_down"),
+                },
+            )).id();
+            character_map.insert(*id, entity);
+        }
+    });
 }
 
 pub fn animate_characters(

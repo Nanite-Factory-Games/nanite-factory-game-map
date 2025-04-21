@@ -146,7 +146,8 @@ fn create_scenario_1(
         }
         let frame_coord = result[index];
         println!("Frame {}: {:?}", i, frame_coord);
-        frame.character_movements.insert(0, Vec2::new(frame_coord.0 as _, frame_coord.1 as _));
+        // Tiled wont show us the correct coordinates so we have to flip the y axis
+        frame.character_movements.insert(0, Vec2::new(frame_coord.0 as f32, 511.0-frame_coord.1 as f32));
         frames.push(frame);
     }
 

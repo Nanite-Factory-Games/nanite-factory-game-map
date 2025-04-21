@@ -16,14 +16,14 @@ pub enum FrameType {
 pub struct TimelineFrame {
     // List of ids of characters that moved and their new positions
     #[serde(deserialize_with = "string_key_map")]
-    character_movements: HashMap<usize, Vec2>,
+    pub character_movements: HashMap<u64, Vec2>,
     // List of actions that characters performed on the tick before they moved
     #[serde(deserialize_with = "string_key_map")]
-    character_actions: HashMap<usize, String>,
+    pub character_actions: HashMap<u64, String>,
     // List of NPC movements performed on the tick
     #[serde(deserialize_with = "string_key_map")]
-    npc_movements: HashMap<usize, Vec2>,
+    pub npc_movements: HashMap<u64, Vec2>,
     // List of actions that NPCs performed on the tick
     #[serde(deserialize_with = "string_key_map")]
-    npc_actions: HashMap<usize, String>
+    pub npc_actions: HashMap<u64, String>
 }
