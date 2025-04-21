@@ -1,9 +1,5 @@
-use bevy::app::App;
-use bevy::ecs::entity;
-use bevy::utils::info;
 use bevy::{log, prelude::*};
 use bevy_ecs_tilemap::prelude::*;
-use crate::shared::events::TileClickEvent;
 
 use super::assets::TiledMap;
 use super::components::*;
@@ -11,7 +7,7 @@ use super::observers::*;
 
 pub fn startup(mut commands: Commands, asset_server: Res<AssetServer>) {
 
-    let map_handle = TiledMapHandle(asset_server.load("memory://map.tmx"));
+    let map_handle = TiledMapHandle(asset_server.load("memory://title.tmx"));
 
     commands.spawn(TiledMapBundle {
         tiled_map: map_handle,
@@ -105,8 +101,6 @@ pub fn process_loaded_maps(
 
                     // Once materials have been created/added we need to then create the layers.
                     for (layer_index, layer) in tiled_map.map.layers().enumerate() {
-                        let offset_x = layer.offset_x;
-                        let offset_y = layer.offset_y;
 
                         let tiled::LayerType::Tiles(tile_layer) = layer.layer_type() else {
                             log::info!(
@@ -187,9 +181,6 @@ pub fn process_loaded_maps(
 
                                 let entity = commands
                                     .spawn_empty()
-                                    // .observe(on_tile_click)
-                                    // .observe(on_tile_down)
-                                    // .observe(on_tile_up)
                                     .id();
                                 match animation {
                                     Some(anim) => {
@@ -226,10 +217,8 @@ pub fn process_loaded_maps(
                             .insert(layer_index as u32, layer_entity);
                     }
                 }
-                info!("Inserting tiles");
                 commands.insert_or_spawn_batch(animated_tiles.into_boxed_slice().into_iter());
                 commands.insert_or_spawn_batch(unanimated_tiles.into_boxed_slice().into_iter());
-                info!("Inserted tiles"); 
             }
         }
     }

@@ -1,4 +1,4 @@
-use std::{collections::HashMap, hash::Hash, path::Path, sync::Mutex, time::Duration};
+use std::{collections::{HashMap, VecDeque}, hash::Hash, path::Path, sync::Mutex, time::Duration};
 
 use bevy::{
     prelude::*,
@@ -38,6 +38,15 @@ struct MemoryDir {
 #[derive(Resource)]
 struct FrameReceiver(crossbeam_channel::Receiver<TimelineFrame>);
 
+#[derive(Resource)]
+struct Timeline(VecDeque<TimelineFrame>);
+
+#[derive(Resource)]
+pub struct LoopTimeline(pub bool);
+
+#[derive(Resource)]
+pub struct LoopTimelineIndex(pub usize);
+
 #[derive(Deserialize)]
 pub struct MapConfiguration {
     pub tickrate: u64,
@@ -47,6 +56,12 @@ pub struct MapConfiguration {
     /// The id of the character entity to follow
     pub follow_id: Option<u64>,
     pub canvas_id: Option<String>,
+    pub loop_timeline: bool
+}
+
+#[derive(Deserialize)]
+pub struct CameraConfiguration {
+    pub position: Vec2,
 }
 
 #[derive(Deserialize)]
@@ -61,7 +76,8 @@ pub struct MapConfigurationUpdate {
 static FRAME_SENDER: Mutex<Option<crossbeam_channel::Sender<TimelineFrame>>> = Mutex::new(None);
 
 pub fn register(app: &mut App) {
-    app.add_plugins(actions)
+    app
+        .add_plugins(actions)
         .add_plugins(camera)
         .add_plugins(shared)
         .add_plugins(entities)
@@ -70,7 +86,7 @@ pub fn register(app: &mut App) {
         .add_plugins(timeline);
 }
 
-pub fn run(configuration: MapConfiguration, frame_receiver: crossbeam_channel::Receiver<TimelineFrame>) {
+pub fn configure(configuration: MapConfiguration, frame_receiver: crossbeam_channel::Receiver<TimelineFrame>) -> App {
     let mut app = App::new();
 
     // Set up memory asset reader
@@ -95,6 +111,10 @@ pub fn run(configuration: MapConfiguration, frame_receiver: crossbeam_channel::R
     let frame_receiver = FrameReceiver(frame_receiver);
     app.insert_resource(frame_receiver);
 
+    // Set wether the timeline should loop
+    app.insert_resource(LoopTimeline(configuration.loop_timeline));
+    app.insert_resource(LoopTimelineIndex(0));
+
     // Create the window
     app.add_plugins(
         DefaultPlugins
@@ -116,7 +136,7 @@ pub fn run(configuration: MapConfiguration, frame_receiver: crossbeam_channel::R
     app.insert_resource(ControlsEnabled(configuration.controls_enabled));
 
     register(&mut app);
-    app.run();
+    return app;
 }
 
 /// Entrypoint for starting the wasm app
@@ -132,10 +152,14 @@ pub fn start(configuration: JsValue) {
     let (sender, receiver) = crossbeam_channel::unbounded::<TimelineFrame>();
     let mut frame_sender_lock = FRAME_SENDER.lock().unwrap();
     *frame_sender_lock = Some(sender);
+    drop(frame_sender_lock);
 
     // Deserialize the configuration and run the game
     match serde_wasm_bindgen::from_value::<MapConfiguration>(configuration) {
-        Ok(configuration) => { run(configuration, receiver); }
+        Ok(configuration) => {
+            let mut app = configure(configuration, receiver);
+            app.run();
+        }
         Err(e) => {
             error!("Error thrown during initialization: {:?}", e);
         }
@@ -144,6 +168,7 @@ pub fn start(configuration: JsValue) {
 
 #[wasm_bindgen]
 pub fn submit_timeline_frame(frame: JsValue) {
+    info!("Submitting frame");
     match serde_wasm_bindgen::from_value::<TimelineFrame>(frame) {
         Ok(frame) => {
             // Don't freak out, this is probably not an issue

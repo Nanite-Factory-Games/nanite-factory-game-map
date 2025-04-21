@@ -4,23 +4,35 @@
     <meta charset="UTF-8">
     <title>Hello wasm-pack!</title>
     <script type="module">
-        import init, { start } from "./out/nanite_factory_game_map.js";
+        import init, { start, submit_timeline_frame } from "./out/nanite_factory_game_map.js";
         
         window.onload = () => {
         (async () => {
             let res = await fetch('./out/assets.json');
             let assets = (await res.json());
+            let timeline = await (await fetch('./generate_frames/frames.json')).json();
+            console.log(timeline);
 
             init().then(()=>{
-                start({
+                new Promise(() => {
+                  start({
                     tickrate: 10,
                     controls_enabled: true,
-                    
+                    loop_timeline: true,
                     assets,
                     camera_position: [0, 0],
                     follow_id: null,
                     canvas_id: "#canvas",
+                  });
                 });
+                setTimeout(() => {
+                  console.log("started frames type is " + typeof timeline);
+                  for (let frame of timeline) {
+                      console.log(frame);
+                      submit_timeline_frame(frame);
+                  }
+                }, 10000);
+                
             });
         })();
     }

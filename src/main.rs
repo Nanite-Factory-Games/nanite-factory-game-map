@@ -16,14 +16,16 @@ fn main() {
         get_assets_recursively(Path::new("assets"), &mut assets);
         let (sender, receiver) = crossbeam_channel::unbounded::<TimelineFrame>();
 
-        nanite_factory_game_map::run(MapConfiguration {
+        let mut app = nanite_factory_game_map::configure(MapConfiguration {
             tickrate: 10,
             controls_enabled: true,
             assets,
             camera_position: Vec2::new(0., 0.),
+            loop_timeline: false,
             follow_id: None,
             canvas_id: None,
         }, receiver);
+        app.run();
     }
 }
 #[cfg(not(all(target_arch = "wasm32", target_os = "unknown")))]
@@ -38,7 +40,6 @@ fn get_assets_recursively(path: &Path, assets: &mut HashMap<String, Vec<u8>>) {
             let path_string = path.to_str().unwrap().to_string().replace("assets/", "");
             let bytes = std::fs::read(path).unwrap();
             assets.insert(path_string.clone(), bytes);
-            println!("assets.insert({:?})", path_string);
         }
     }
 }
