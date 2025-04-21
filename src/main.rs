@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use bevy::prelude::*;
-use nanite_factory_game_map::{timeline::TimelineFrame, MapConfiguration};
+use nanite_factory_game_map::timeline::resources::TimelineFrame;
 use std::path::Path;
 
 fn main() {

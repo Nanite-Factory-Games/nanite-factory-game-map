@@ -1,6 +1,6 @@
-use bevy::ecs::system::{Res, ResMut};
+use bevy::ecs::system::Res;
 
-use super::{Timeline, TimelineFrame};
+use super::Timeline;
 
 pub fn frame_available(
     timeline: Res<Timeline>,

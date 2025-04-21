@@ -1,8 +1,8 @@
 use bevy::prelude::*;
 use bevy::log::info;
-use crate::{entities::components::{CharacterEntity, PlayerCharacterMarker}, FrameReceiver, LoopTimeline, LoopTimelineIndex};
+use crate::{entities::components::{CharacterEntity, PlayerCharacterMarker}, FrameReceiver, LoopTimeline };
 
-use super::{FrameType, Timeline, TimelineFrame};
+use super::{resources::{FrameType, LoopTimelineIndex, TimelineFrame}, Timeline};
 
 // We switch between movement and animation frames on every tick
 pub fn alternate_frame(

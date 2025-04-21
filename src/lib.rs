@@ -6,14 +6,13 @@ use bevy::{
 };
 
 use actions::actions;
-use bevy_quick_response::QuickResponsePlugin;
 use camera::camera;
 use entities::entities;
 use selection::selection;
 use serde::Deserialize;
 use shared::{resources::ControlsEnabled, shared};
 use tilemap::tilemap;
-use timeline::{timeline, TimelineFrame};
+use timeline::{resources::TimelineFrame, timeline};
 use tracing_wasm::WASMLayerConfigBuilder;
 use wasm_bindgen::{JsObject, JsValue, prelude::wasm_bindgen};
 
@@ -44,8 +43,6 @@ struct Timeline(VecDeque<TimelineFrame>);
 #[derive(Resource)]
 pub struct LoopTimeline(pub bool);
 
-#[derive(Resource)]
-pub struct LoopTimelineIndex(pub usize);
 
 #[derive(Deserialize)]
 pub struct MapConfiguration {
@@ -113,7 +110,6 @@ pub fn configure(configuration: MapConfiguration, frame_receiver: crossbeam_chan
 
     // Set wether the timeline should loop
     app.insert_resource(LoopTimeline(configuration.loop_timeline));
-    app.insert_resource(LoopTimelineIndex(0));
 
     // Create the window
     app.add_plugins(
