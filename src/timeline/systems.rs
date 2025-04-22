@@ -123,11 +123,24 @@ pub fn animate_characters(
     mut commands: Commands,
     mut current_frame: Res<TimelineFrame>,
     frame_type: Res<FrameType>,
-    mut query: Query<(&CharacterEntity, &Transform), With<PlayerCharacterMarker>>,
+    mut character_entity_map: ResMut<EntityIdMap>,
+    asset_server: Res<AssetServer>,
 ) {
     if *frame_type != FrameType::Action { return } 
 
+    let character_map = &mut character_entity_map.0;
 
+    current_frame.character_actions.iter().for_each(|(id, animation_name)| {
+        if let Some(entity) = character_map.get(id) {
+            let animation = AseSpriteAnimation {
+                aseprite: asset_server.load("player.aseprite"),
+                animation: Animation::tag(&animation_name),
+            };
+            commands
+                .entity(*entity)
+                .insert(animation);
+        }
+    });
 }
 
 pub fn move_npcs(

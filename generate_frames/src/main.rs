@@ -107,7 +107,7 @@ fn create_scenario_1(
     let first_character_start = Vec2::new(81.0, 105.0);
     let first_character_current = first_character_start.clone();
 
-    const GOAL: (i32, i32) = (84, 93);
+    const GOAL: (i32, i32) = (85, 94);
     
     let successors = |&(x, y): &(i32,i32)| -> Vec<((i32, i32), i32)> {
         let mut neighbors = vec![];
@@ -148,6 +148,12 @@ fn create_scenario_1(
         println!("Frame {}: {:?}", i, frame_coord);
         // Tiled wont show us the correct coordinates so we have to flip the y axis
         frame.character_movements.insert(0, Vec2::new(frame_coord.0 as f32, 511.0-frame_coord.1 as f32));
+        // We want to show the fishing animation on this one when its at the spot
+        if frame_coord.0 == GOAL.0 && frame_coord.1 == GOAL.1 {
+            frame.character_actions.insert(0, "fish_right".to_string());
+        } else if frame_coord.0 == first_character_start.x as i32 && frame_coord.1 == first_character_start.y as i32 {
+            frame.character_actions.insert(0, "cook_left".to_string());
+        }
         frames.push(frame);
     }
 
