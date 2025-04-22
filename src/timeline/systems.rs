@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use bevy::log::info;
 use bevy_aseprite_ultra::prelude::{Animation, AseSpriteAnimation};
+use bevy_tweening::{lens::TransformPositionLens, Animator, Tween};
 use crate::{entities::{components::{CharacterEntity, PlayerCharacterMarker}, resources::EntityIdMap}, FrameReceiver, LoopTimeline };
 
 use super::{resources::{FrameType, LoopTimelineIndex, TimelineFrame}, Timeline};
@@ -52,6 +53,8 @@ pub fn move_characters(
     mut character_entity_map: ResMut<EntityIdMap>,
     asset_server: Res<AssetServer>,
     frame_type: Res<FrameType>,
+    character_query: Query<(&Transform)>,
+    tick_rate: Res<Time::<Fixed>>
 ) {
     if *frame_type != FrameType::Movement { return } 
     // A few things we'll need to do.
@@ -63,14 +66,48 @@ pub fn move_characters(
     current_frame.character_movements.iter().for_each(|(id, position)| {
         if let Some(entity) = character_map.get(id) {
             info!("moving character {} to {}", id, position);
-            commands.entity(*entity).insert(Transform::from_translation(position.extend(1.0) * Vec3::new(16., 16., 49.0)));
+            let (transform) = character_query.get(*entity).unwrap();
+            let end = position.extend(1.0) * Vec3::new(16., 16., 49.0);
+            if transform.translation.x != end.x || transform.translation.y != end.y {
+                // Tween the movement of the character between its current position and the next
+                let tween = Tween::new(
+                    // Use a quadratic easing on both endpoints.
+                    EaseFunction::QuadraticInOut,
+                    // Animation time.
+                    tick_rate.timestep(),
+                    // The lens gives access to the Transform component of the Entity,
+                    // for the Animator to animate it. It also contains the start and
+                    // end values respectively associated with the progress ratios 0. and 1.
+                    TransformPositionLens {
+                        start: transform.translation,
+                        end,
+                    },
+                );
+                let animation_tag = if transform.translation.y < end.y {
+                        "walk_up"
+                } else  if transform.translation.y > end.y {
+                    "walk_down"
+                } else if transform.translation.x < end.x {
+                    "walk_right"
+                } else {
+                    "walk_left"
+                };
+                info!("animating character {} to {}", id, animation_tag);
+                let animation = AseSpriteAnimation {
+                    aseprite: asset_server.load("player.aseprite"),
+                    animation: Animation::tag(animation_tag),
+                };
+                commands
+                    .entity(*entity)
+                    .insert(Animator::new(tween))
+                    .insert(animation);
+            }
         } else {
             info!("spawning character {} at {}", id, position);
             let entity = commands.spawn((
                 Transform::from_translation(position.extend(1.0) * Vec3::new(16., 16., 49.0)),
                 CharacterEntity {
-                    name: format!("character_{}", id),
-                    id: *id
+                    name: format!("character_{}", id)
                 },
                 AseSpriteAnimation {
                     aseprite: asset_server.load("player.aseprite"),
