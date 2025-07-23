@@ -1,4 +1,4 @@
-use bevy::{ecs::{component::Component, system::Resource}, math::Vec2};
+use bevy::{ecs::{component::Component, resource::Resource}, math::Vec2};
 use bevy_ecs_tilemap::tiles::TilePos;
 
 #[derive(Component)]

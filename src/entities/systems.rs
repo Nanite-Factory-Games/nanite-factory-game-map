@@ -1,5 +1,5 @@
 use bevy::{ecs::query, prelude::*};
-use bevy_aseprite_ultra::prelude::{Animation, AseSpriteAnimation};
+use bevy_aseprite_ultra::prelude::{Animation, AseAnimation};
 
 pub fn startup(
     mut commands: Commands,

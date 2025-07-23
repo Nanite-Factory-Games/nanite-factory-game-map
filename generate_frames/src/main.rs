@@ -108,6 +108,12 @@ fn create_scenario_1(
     let first_character_current = first_character_start.clone();
 
     const GOAL: (i32, i32) = (85, 94);
+
+    const EXTRA_1_POSITION: (i32, i32) = (84, 98);
+    const EXTRA_2_POSITION: (i32, i32) = (84, 93);
+    const EXTRA_1_ANIMATION: &str = "fish_left";
+    const EXTRA_2_ANIMATION: &str = "fish_up";
+
     
     let successors = |&(x, y): &(i32,i32)| -> Vec<((i32, i32), i32)> {
         let mut neighbors = vec![];
@@ -132,7 +138,7 @@ fn create_scenario_1(
     
     let frame_per_tile = (NUM_FRAMES as f32 / result.len() as f32) / 2.0;
     println!("Frames per tile: {}", frame_per_tile);
-
+    let mut previous_coord = result[0];
     for i in 0..NUM_FRAMES {
         let mut frame = TimelineFrame {
             character_movements: HashMap::new(),
@@ -144,17 +150,27 @@ fn create_scenario_1(
         if index >= result.len() {
             index = result.len() - (index - result.len()+1);
         }
+        
         let frame_coord = result[index];
         println!("Frame {}: {:?}", i, frame_coord);
         // Tiled wont show us the correct coordinates so we have to flip the y axis
         frame.character_movements.insert(0, Vec2::new(frame_coord.0 as f32, 511.0-frame_coord.1 as f32));
         // We want to show the fishing animation on this one when its at the spot
-        if frame_coord.0 == GOAL.0 && frame_coord.1 == GOAL.1 {
+        if previous_coord.0 == GOAL.0 && previous_coord.1 == GOAL.1 {
             frame.character_actions.insert(0, "fish_right".to_string());
-        } else if frame_coord.0 == first_character_start.x as i32 && frame_coord.1 == first_character_start.y as i32 {
+        } else if previous_coord.0 == first_character_start.x as i32 && previous_coord.1 == first_character_start.y as i32 {
             frame.character_actions.insert(0, "cook_left".to_string());
         }
+
+        // We also want to show some additional characters that stand in place fishing
+        frame.character_movements.insert(1, Vec2::new(EXTRA_1_POSITION.0 as f32, 511.0-EXTRA_1_POSITION.1 as f32));
+        frame.character_movements.insert(2, Vec2::new(EXTRA_2_POSITION.0 as f32, 511.0-EXTRA_1_POSITION.1 as f32));
+        frame.character_actions.insert(1, EXTRA_1_ANIMATION.to_string());
+        // frame.character_actions.insert(2, EXTRA_2_ANIMATION.to_string());
+
+
         frames.push(frame);
+        previous_coord = frame_coord;
     }
 
     return frames;

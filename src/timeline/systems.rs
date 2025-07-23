@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use bevy::log::info;
-use bevy_aseprite_ultra::prelude::{Animation, AseSpriteAnimation};
+use bevy_aseprite_ultra::prelude::{Animation, AseAnimation};
 use bevy_tweening::{lens::TransformPositionLens, Animator, Tween};
 use crate::{entities::{components::{CharacterEntity, PlayerCharacterMarker}, resources::EntityIdMap}, FrameReceiver, LoopTimeline };
 
@@ -65,8 +65,7 @@ pub fn move_characters(
 
     current_frame.character_movements.iter().for_each(|(id, position)| {
         if let Some(entity) = character_map.get(id) {
-            info!("moving character {} to {}", id, position);
-            let (transform) = character_query.get(*entity).unwrap();
+            let transform = character_query.get(*entity).unwrap();
             let end = position.extend(1.0) * Vec3::new(16., 16., 49.0);
             if transform.translation.x != end.x || transform.translation.y != end.y {
                 // Tween the movement of the character between its current position and the next
@@ -84,7 +83,7 @@ pub fn move_characters(
                     },
                 );
                 let animation_tag = if transform.translation.y < end.y {
-                        "walk_up"
+                    "walk_up"
                 } else  if transform.translation.y > end.y {
                     "walk_down"
                 } else if transform.translation.x < end.x {
@@ -93,7 +92,7 @@ pub fn move_characters(
                     "walk_left"
                 };
                 info!("animating character {} to {}", id, animation_tag);
-                let animation = AseSpriteAnimation {
+                let animation = AseAnimation {
                     aseprite: asset_server.load("player.aseprite"),
                     animation: Animation::tag(animation_tag),
                 };
@@ -109,7 +108,7 @@ pub fn move_characters(
                 CharacterEntity {
                     name: format!("character_{}", id)
                 },
-                AseSpriteAnimation {
+                AseAnimation {
                     aseprite: asset_server.load("player.aseprite"),
                     animation: Animation::tag("idle_down"),
                 },
@@ -132,7 +131,7 @@ pub fn animate_characters(
 
     current_frame.character_actions.iter().for_each(|(id, animation_name)| {
         if let Some(entity) = character_map.get(id) {
-            let animation = AseSpriteAnimation {
+            let animation = AseAnimation {
                 aseprite: asset_server.load("player.aseprite"),
                 animation: Animation::tag(&animation_name),
             };

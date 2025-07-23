@@ -3,7 +3,6 @@ use bevy_ecs_tilemap::prelude::*;
 
 use super::assets::TiledMap;
 use super::components::*;
-use super::observers::*;
 
 pub fn startup(mut commands: Commands, asset_server: Res<AssetServer>) {
 

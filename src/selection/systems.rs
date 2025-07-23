@@ -23,15 +23,15 @@ pub fn tile_down_handler(
     controls_enabled: Res<ControlsEnabled>,
     q_window: Query<&Window>,
     q_camera: Query<(&Camera, &GlobalTransform)>,
-) {
-    if controls_enabled.0 == false { return; }
+) -> Result<(), BevyError> {
+    if controls_enabled.0 == false { return Ok(()); }
     if let Some(event) = events.read().filter(|event| event.button == PointerButton::Primary).last() {
-        let window = q_window.single();
+        let window = q_window.single()?;
 
         // Get cursor position in world coordinates
         if let Some(cursor_pos) = window.cursor_position() {
             // println!("cursor_pos: {:?}", cursor_pos);
-            let (camera, camera_transform) = q_camera.single();
+            let (camera, camera_transform) = q_camera.single()?;
             let pos = camera
                 .viewport_to_world_2d(camera_transform, cursor_pos)
                 .unwrap();
@@ -52,6 +52,7 @@ pub fn tile_down_handler(
             ));
         }   
     }
+    Ok(())
 }
 
 pub fn draw_box_system(
@@ -62,13 +63,13 @@ pub fn draw_box_system(
     mut query: Query<(&mut Transform, &mut Mesh2d), With<SelectionBoxMarker>>,
     mut meshes: ResMut<Assets<Mesh>>,
     q_camera: Query<(&Camera, &GlobalTransform)>,
-) {
-    let window = windows.single();
+) -> Result<(), BevyError> {
+    let window = windows.single()?;
 
     // Get cursor position in world coordinates
     if let Some(cursor_pos) = window.cursor_position() {
         // println!("cursor_pos: {:?}", cursor_pos);
-        let (camera, camera_transform) = q_camera.single();
+        let (camera, camera_transform) = q_camera.single()?;
         let pos = camera
             .viewport_to_world_2d(camera_transform, cursor_pos)
             .unwrap();
@@ -77,7 +78,7 @@ pub fn draw_box_system(
 
         if let Some(start) = box_drawing.start_pos {
             // Remove existing box
-            for (transform, mesh) in query.get_single_mut().iter_mut() {
+            for (transform, mesh) in query.single_mut().iter_mut() {
                 // Calculate box properties
                 let min = Vec2::new(start.x.min(pos.x), start.y.min(pos.y));
                 let max = Vec2::new(start.x.max(pos.x), start.y.max(pos.y));
@@ -92,6 +93,7 @@ pub fn draw_box_system(
             }
         }
     }
+    Ok(())
 }
 
 pub fn tile_up_handler(

@@ -1,6 +1,6 @@
 use std::{io::{Cursor, ErrorKind}, path::Path, sync::Arc};
 
-use bevy::{asset::{io::Reader, AssetLoader, AssetPath}, log, prelude::*, utils::HashMap};
+use bevy::{asset::{io::Reader, AssetLoader, AssetPath}, log, platform::collections::HashMap, prelude::*};
 use bevy_ecs_tilemap::map::TilemapTexture;
 use anyhow::Context;
 

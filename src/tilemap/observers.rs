@@ -9,10 +9,10 @@ pub fn on_tile_click(
     q_tile_pos: Query<&TilePos>,
     mut ev_click: EventWriter<TileClickEvent>,
 ) {
-    let entity = trigger.entity();
+    let entity = trigger.target();
     let tile_pos = *q_tile_pos.get(entity).expect("Failed to get tilepos for tile entity");
     let button = trigger.button;
-    ev_click.send(TileClickEvent {
+    ev_click.write(TileClickEvent {
         entity,
         button,
         tile_pos
@@ -20,15 +20,15 @@ pub fn on_tile_click(
 }
 
 pub fn on_tile_down(
-    trigger: Trigger<Pointer<Down>>,
+    trigger: Trigger<Pointer<Pressed>>,
     q_tile_pos: Query<&TilePos>,
     mut ev_click: EventWriter<TileDownEvent>,
 ) {
-    let entity = trigger.entity();
+    let entity = trigger.target();
     let tile_pos = *q_tile_pos.get(entity).expect("Failed to get tilepos for tile entity");
     let button = trigger.button;
     let location = trigger.pointer_location.clone();
-    ev_click.send(TileDownEvent {
+    ev_click.write(TileDownEvent {
         entity,
         button,
         location,
@@ -37,15 +37,15 @@ pub fn on_tile_down(
 }
 
 pub fn on_tile_up(
-    trigger: Trigger<Pointer<Up>>,
+    trigger: Trigger<Pointer<Released>>,
     q_tile_pos: Query<&TilePos>,
     mut ev_click: EventWriter<TileUpEvent>,
 ) {
-    let entity = trigger.entity();
+    let entity = trigger.target();
     let tile_pos = *q_tile_pos.get(entity).expect("Failed to get tilepos for tile entity");
     let button = trigger.button;
     let location = trigger.pointer_location.clone();
-    ev_click.send(TileUpEvent {
+    ev_click.write(TileUpEvent {
         entity,
         button,
         location,

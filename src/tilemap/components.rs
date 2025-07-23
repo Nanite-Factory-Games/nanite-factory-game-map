@@ -1,6 +1,6 @@
 use bevy::ecs::bundle::Bundle;
+use bevy::platform::collections::HashMap;
 use bevy::prelude::*;
-use bevy::utils::HashMap;
 use bevy_ecs_tilemap::prelude::*;
 
 use super::assets::TiledMap;

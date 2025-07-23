@@ -1,8 +1,7 @@
 use std::{collections::{HashMap, VecDeque}, hash::Hash, path::Path, sync::Mutex, time::Duration};
 
 use bevy::{
-    prelude::*,
-    utils::{info, tracing},
+    log::tracing, prelude::*
 };
 
 use actions::actions;
@@ -72,7 +71,7 @@ pub struct MapConfigurationUpdate {
 // Staric crossbeam channel sender
 static FRAME_SENDER: Mutex<Option<crossbeam_channel::Sender<TimelineFrame>>> = Mutex::new(None);
 
-pub fn register(app: &mut App) {
+fn register(app: &mut App) {
     app
         .add_plugins(actions)
         .add_plugins(camera)
@@ -164,7 +163,7 @@ pub fn start(configuration: JsValue) {
 
 #[wasm_bindgen]
 pub fn submit_timeline_frame(frame: JsValue) {
-    info!("Submitting frame");
+    // info!("Submitting frame");
     match serde_wasm_bindgen::from_value::<TimelineFrame>(frame) {
         Ok(frame) => {
             // Don't freak out, this is probably not an issue
