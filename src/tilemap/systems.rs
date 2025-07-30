@@ -1,32 +1,29 @@
-use bevy::{log, prelude::*};
+use anyhow::Context;
+use bevy::{log, platform::collections::HashMap, prelude::*};
 use bevy_ecs_tilemap::prelude::*;
+use ldtk_rust::bevy::LdtkMap;
 
-use super::assets::TiledMap;
+
 use super::components::*;
 
 pub fn startup(mut commands: Commands, asset_server: Res<AssetServer>) {
 
-    let map_handle = TiledMapHandle(asset_server.load("memory://title.tmx"));
+    let handle = LdtkMapHandle(asset_server.load("memory://map/map.ldtk"));
 
-    commands.spawn(TiledMapBundle {
-        tiled_map: map_handle,
+    commands.spawn(LdtkMapBundle {
+        ldtk_map: handle,
         ..Default::default()
     });
 }
 
 pub fn process_loaded_maps(
     mut commands: Commands,
-    mut map_events: EventReader<AssetEvent<TiledMap>>,
-    maps: Res<Assets<TiledMap>>,
-    tile_storage_query: Query<(Entity, &TileStorage)>,
-    mut map_query: Query<(
-        &TiledMapHandle,
-        &mut TiledLayersStorage,
-        &TilemapRenderSettings,
-    )>,
-    new_maps: Query<&TiledMapHandle, Added<TiledMapHandle>>,
-) {
-    let mut changed_maps = Vec::<AssetId<TiledMap>>::default();
+    mut map_events: EventReader<AssetEvent<LdtkMap>>,
+    maps: Res<Assets<LdtkMap>>,
+    mut query: Query<(Entity, &LdtkMapHandle, &LdtkMapConfig)>,
+    new_maps: Query<&LdtkMapHandle, Added<LdtkMapHandle>>,
+) -> Result<(), BevyError>{
+    let mut changed_maps = Vec::<AssetId<LdtkMap>>::default();
     for event in map_events.read() {
         match event {
             AssetEvent::Added { id } => {
@@ -47,178 +44,167 @@ pub fn process_loaded_maps(
         }
     }
 
-    // If we have new map entities add them to the changed_maps list.
+    // If we have new map entities, add them to the changed_maps list
     for new_map_handle in new_maps.iter() {
         changed_maps.push(new_map_handle.0.id());
     }
 
     for changed_map in changed_maps.iter() {
-        for (map_handle, mut layer_storage, render_settings) in map_query.iter_mut() {
+        for (entity, map_handle, map_config) in query.iter_mut() {
             // only deal with currently changed map
-            if map_handle.0.id() != *changed_map { continue; }
+            if map_handle.0.id() != *changed_map {
+                continue;
+            }
+            
+            if let Some(ldtk_map) = maps.get(&map_handle.0) {
+                // Despawn all existing tilemaps for this LdtkMap
+                commands.entity(entity).despawn_related::<Children>();
 
-            if let Some(tiled_map) = maps.get(&map_handle.0) {
-                // TODO: Create a RemoveMap component..
-                for layer_entity in layer_storage.storage.values() {
-                    if let Ok((_, layer_tile_storage)) = tile_storage_query.get(*layer_entity) {
-                        for tile in layer_tile_storage.iter().flatten() {
-                            commands.entity(*tile).despawn_recursive()
-                        }
-                    }
-                    // commands.entity(*layer_entity).despawn_recursive();
+                // Pull out tilesets and their definitions into a new hashmap
+                let mut tilesets = HashMap::new();
+                ldtk_map.project.defs.tilesets.iter().for_each(|tileset| {
+                    tilesets.insert(
+                        tileset.uid,
+                        (
+                            ldtk_map.tilesets.get(&tileset.uid).unwrap().clone(),
+                            tileset,
+                        ),
+                    );
+                });
+
+                let default_grid_size = ldtk_map.project.default_grid_size;
+                let level = &ldtk_map.project.levels[map_config.selected_level];
+
+                let map_tile_count_x = (level.px_wid / default_grid_size) as u32;
+                let map_tile_count_y = (level.px_hei / default_grid_size) as u32;
+
+                let size = TilemapSize {
+                    x: map_tile_count_x,
+                    y: map_tile_count_y,
+                };
+
+                if level.layer_instances.as_ref().is_none() {
+                    println!("No layers found in level!");
+                    continue;
+                } else {
+                    println!("Found {} layers in level!", level.layer_instances.as_ref().unwrap().len());
                 }
-                info!("Allocating space for tiles");
 
-                let mut animated_tiles: Vec<(Entity, (TileBundle, AnimatedTile))> = Vec::with_capacity((tiled_map.map.width*tiled_map.map.height) as _);
-                let mut unanimated_tiles: Vec<(Entity, TileBundle)> = Vec::with_capacity((tiled_map.map.width*tiled_map.map.height*2) as _);
-                info!("Allocated space for tiles");
+                // We will create a tilemap for each layer in the following loop
+                for (layer_id, layer) in level
+                    .layer_instances
+                    .as_ref()
+                    .unwrap()
+                    .iter()
+                    .rev()
+                    .enumerate()
+                {
+                    if let Some(uid) = layer.tileset_def_uid {
+                        let (texture, tileset) = tilesets.get(&uid).unwrap().clone();
 
-                // The TilemapBundle requires that all tile images come exclusively from a single
-                // tiled texture or from a Vec of independent per-tile images. Furthermore, all of
-                // the per-tile images must be the same size. Since Tiled allows tiles of mixed
-                // tilesets on each layer and allows differently-sized tile images in each tileset,
-                // this means we need to load each combination of tileset and layer separately.
-                for (tileset_index, tileset) in tiled_map.map.tilesets().iter().enumerate() {
-                    let Some(tilemap_texture) = tiled_map.tilemap_textures.get(&tileset_index)
-                    else {
-                        log::warn!("Skipped creating layer with missing tilemap textures.");
-                        continue;
-                    };
-
-                    let tile_size = TilemapTileSize {
-                        x: tileset.tile_width as f32,
-                        y: tileset.tile_height as f32,
-                    };
-
-                    let tile_spacing = TilemapSpacing {
-                        x: tileset.spacing as f32,
-                        y: tileset.spacing as f32,
-                    };
-
-                    
-
-
-                    // Once materials have been created/added we need to then create the layers.
-                    for (layer_index, layer) in tiled_map.map.layers().enumerate() {
-
-                        let tiled::LayerType::Tiles(tile_layer) = layer.layer_type() else {
-                            log::info!(
-                                "Skipping layer {} because only tile layers are supported.",
-                                layer.id()
-                            );
-                            continue;
+                        // Tileset-specific tilemap settings
+                        let tile_size = TilemapTileSize {
+                            x: tileset.tile_grid_size as f32,
+                            y: tileset.tile_grid_size as f32,
                         };
 
-                        let tiled::TileLayer::Finite(layer_data) = tile_layer else {
-                            log::info!(
-                                "Skipping layer {} because only finite layers are supported.",
-                                layer.id()
-                            );
-                            continue;
-                        };
+                        // Pre-emptively create a map entity for tile creation
+                        let map_entity = commands.spawn_empty().id();
 
-                        
-                        let map_size = TilemapSize {
-                            x: tiled_map.map.width,
-                            y: tiled_map.map.height,
-                        };
+                        // Create tiles for this layer from LDtk's grid_tiles and auto_layer_tiles
+                        let mut storage = TileStorage::empty(size);
 
-                        let grid_size = TilemapGridSize {
-                            x: tiled_map.map.tile_width as f32,
-                            y: tiled_map.map.tile_height as f32,
-                        };
+                        for tile in layer.grid_tiles.iter().chain(layer.auto_layer_tiles.iter()) {
+                            let mut position = TilePos {
+                                x: (tile.px[0] / default_grid_size) as u32,
+                                y: (tile.px[1] / default_grid_size) as u32,
+                            };
+                            let flip_x = tile.f & 1 != 0;
+                            let flip_y = tile.f & 2 != 0;
+                            position.y = map_tile_count_y - position.y - 1;
+                            let tile_entity = commands
+                                .spawn(TileBundle {
+                                    position,
+                                    tilemap_id: TilemapId(map_entity),
+                                    texture_index: TileTextureIndex(tile.t as u32),
+                                    flip: TileFlip { x: flip_x, y: flip_y, d: false },
+                                    ..default()
+                                })
+                                .id();
 
-                        let map_type = match tiled_map.map.orientation {
-                            tiled::Orientation::Hexagonal => TilemapType::Hexagon(HexCoordSystem::Row),
-                            tiled::Orientation::Isometric => TilemapType::Isometric(IsoCoordSystem::Diamond),
-                            tiled::Orientation::Staggered => TilemapType::Isometric(IsoCoordSystem::Staggered),
-                            tiled::Orientation::Orthogonal => TilemapType::Square
-                        };
-
-                        let mut tile_storage = TileStorage::empty(map_size);
-                        let layer_entity = commands.spawn_empty().id();
-
-                        for x in 0..map_size.x {
-                            for y in 0..map_size.y {
-                                // Transform TMX coords into bevy coords.
-                                let mapped_y = tiled_map.map.height - 1 - y;
-
-                                let mapped_x = x as i32;
-                                let mapped_y = mapped_y as i32;
-
-                                let layer_tile = match layer_data.get_tile(mapped_x, mapped_y) {
-                                    Some(t) => t,
-                                    None => {
-                                        continue;
-                                    }
-                                };
-                                if tileset_index != layer_tile.tileset_index() {
-                                    continue;
-                                }
-                                let layer_tile_data =
-                                    match layer_data.get_tile_data(mapped_x, mapped_y) {
-                                        Some(d) => d,
-                                        None => {
-                                            continue;
-                                        }
-                                    };
-
-                                let texture_index = layer_tile.id();
-                                let tile_pos = TilePos { x, y };
-                                let animation = &tileset.get_tile(texture_index).unwrap().animation;
-                                let tile_bundle = TileBundle {
-                                    position: tile_pos,
-                                    tilemap_id: TilemapId(layer_entity),
-                                    texture_index: TileTextureIndex(texture_index),
-                                    flip: TileFlip {
-                                        x: layer_tile_data.flip_h,
-                                        y: layer_tile_data.flip_v,
-                                        d: layer_tile_data.flip_d,
-                                    },
-                                    ..Default::default()
-                                };
-
-                                let entity = commands
-                                    .spawn_empty()
-                                    .id();
-                                match animation {
-                                    Some(anim) => {
-                                        animated_tiles.push((entity, (tile_bundle, AnimatedTile {
-                                            start: anim.first().unwrap().tile_id,
-                                            end: anim.last().unwrap().tile_id,
-                                            speed: 1.0,
-                                        })));
-                                    }
-                                    None => {
-                                        unanimated_tiles.push((entity, tile_bundle));
-                                    }
-                                }
-                                tile_storage.set(&tile_pos, entity);
-                            }
+                            storage.set(&position, tile_entity);
                         }
+
                         
 
-                        commands.entity(layer_entity).insert(TilemapBundle {
+                        let grid_size = tile_size.into();
+                        let map_type = TilemapType::default();
+
+                        // Create the tilemap
+                        commands.entity(map_entity).insert(TilemapBundle {
                             grid_size,
-                            size: map_size,
-                            storage: tile_storage,
-                            texture: tilemap_texture.clone(),
-                            tile_size,
-                            spacing: tile_spacing,
-                            transform: Transform::from_xyz(0.0, 0.0, layer_index as f32),
                             map_type,
-                            render_settings: *render_settings,
-                            ..Default::default()
+                            size,
+                            storage,
+                            texture: TilemapTexture::Single(texture),
+                            tile_size,
+                            anchor: TilemapAnchor::Center,
+                            transform: Transform::from_xyz(0.0, 0.0, layer_id as f32),
+                            ..default()
                         });
+                    } else {
+                        println!("Loading layer {}", layer.identifier);
 
-                        layer_storage
-                            .storage
-                            .insert(layer_index as u32, layer_entity);
+                        for entity in layer.entity_instances.iter() {
+                            
+                            let (image, _) = tilesets
+                                .get(
+                                    &entity.tile
+                                        .as_ref()
+                                        .context("An entity was missing tile definition")?
+                                        .tileset_uid as _
+                                    )
+                                .context("An entity was missing tile definition")?
+                                .clone();
+
+                            let level_width_pixels = level.px_wid;
+                            let level_height_pixels = level.px_hei;
+                            
+
+                            
+                            
+                            let entity_tile = entity.tile.as_ref().context("An entity was missing tile definition")?;
+                            let texture_x1 = entity_tile.x as f32;
+                            let texture_y1 = entity_tile.y as f32;
+                            let texture_x2 = texture_x1 + entity_tile.w as f32;
+                            let texture_y2 = texture_y1 + entity_tile.h as f32;
+
+                            let pivot_x = entity.pivot[0] as f32 * entity_tile.w as f32;
+                            let pivot_y = entity.pivot[1] as f32 * entity_tile.h as f32;
+
+                            // Adjust to match Bevy's center-based coordinate system and flipped Y
+                            let x = entity.px[0] as f32 + ((entity_tile.w - default_grid_size) as f32 / 2.0) - pivot_x - (level_width_pixels as f32 / 2.0) + default_grid_size as f32 / 2.0;
+                            let y = (level_height_pixels as f32 - entity.px[1] as f32 - ((entity_tile.h - default_grid_size) as f32 / 2.0) + pivot_y) - (level_height_pixels as f32 / 2.0) - default_grid_size as f32 / 2.0;
+                            
+
+                            commands.spawn((
+                                Sprite {
+                                    image,
+                                    rect: Some(Rect::new(texture_x1, texture_y1, texture_x2, texture_y2)),
+                                    ..Default::default()
+                                },
+                                Transform::from_xyz(x, y, layer_id as f32)
+                            ));
+
+                            
+                            
+                            println!("Entity added");
+                        }
                     }
                 }
-                commands.insert_or_spawn_batch(animated_tiles.into_boxed_slice().into_iter());
-                commands.insert_or_spawn_batch(unanimated_tiles.into_boxed_slice().into_iter());
             }
         }
+        println!("Finished processing maps");
     }
+    Ok(())
 }

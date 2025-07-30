@@ -1,0 +1,453 @@
+{
+	"__header__": {
+		"fileType": "LDtk Project JSON",
+		"app": "LDtk",
+		"doc": "https://ldtk.io/json",
+		"schema": "https://ldtk.io/files/JSON_SCHEMA.json",
+		"appAuthor": "Sebastien 'deepnight' Benard",
+		"appVersion": "1.5.3",
+		"url": "https://ldtk.io"
+	},
+	"identifier": "RecipePalette",
+	"iid": "9112b020-3740-11f0-8347-a53a4e9467de",
+	"uid": 272,
+	"worldX": 0,
+	"worldY": 0,
+	"worldDepth": 0,
+	"pxWid": 256,
+	"pxHei": 256,
+	"__bgColor": "#696A79",
+	"bgColor": null,
+	"useAutoIdentifier": false,
+	"bgRelPath": null,
+	"bgPos": null,
+	"bgPivotX": 0.5,
+	"bgPivotY": 0.5,
+	"__smartColor": "#ADADB5",
+	"__bgPos": null,
+	"externalRelPath": null,
+	"fieldInstances": [],
+	"layerInstances": [
+		{
+			"__identifier": "Farm",
+			"__type": "IntGrid",
+			"__cWid": 16,
+			"__cHei": 16,
+			"__gridSize": 16,
+			"__opacity": 1,
+			"__pxTotalOffsetX": 0,
+			"__pxTotalOffsetY": 0,
+			"__tilesetDefUid": 258,
+			"__tilesetRelPath": "../sprites/Cute_Fantasy/Tiles/FarmLand/FarmLand_Tile.png",
+			"iid": "128accf0-3740-11f0-a15c-cff3f22b8a2b",
+			"levelId": 272,
+			"layerDefUid": 490,
+			"pxOffsetX": 0,
+			"pxOffsetY": 0,
+			"visible": true,
+			"optionalRules": [],
+			"intGridCsv": [
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0
+			],
+			"autoLayerTiles": [],
+			"seed": 6348114,
+			"overrideTilesetUid": null,
+			"gridTiles": [],
+			"entityInstances": []
+		},
+		{
+			"__identifier": "Entities",
+			"__type": "Entities",
+			"__cWid": 16,
+			"__cHei": 16,
+			"__gridSize": 16,
+			"__opacity": 1,
+			"__pxTotalOffsetX": 0,
+			"__pxTotalOffsetY": 0,
+			"__tilesetDefUid": null,
+			"__tilesetRelPath": null,
+			"iid": "97b76ec0-3740-11f0-8347-6f0fcc08c628",
+			"levelId": 272,
+			"layerDefUid": 273,
+			"pxOffsetX": 0,
+			"pxOffsetY": 0,
+			"visible": true,
+			"optionalRules": [],
+			"intGridCsv": [],
+			"autoLayerTiles": [],
+			"seed": 4191742,
+			"overrideTilesetUid": null,
+			"gridTiles": [],
+			"entityInstances": [
+				{
+					"__identifier": "Recipe",
+					"__grid": [0,0],
+					"__pivot": [0,0],
+					"__tags": ["Recipe"],
+					"__tile": { "tilesetUid": 256, "x": 16, "y": 32, "w": 16, "h": 16 },
+					"__smartColor": "#000000",
+					"iid": "bc76c800-3740-11f0-8347-fd0c74359388",
+					"width": 16,
+					"height": 16,
+					"defUid": 267,
+					"px": [0,0],
+					"fieldInstances": [
+						{ "__identifier": "recipe_name", "__type": "String", "__value": "CookShrimp", "__tile": null, "defUid": 274, "realEditorValues": [{
+							"id": "V_String",
+							"params": ["CookShrimp"]
+						}] },
+						{ "__identifier": "input_items", "__type": "Array<LocalEnum.Items>", "__value": ["RawShrimp"], "__tile": null, "defUid": 325, "realEditorValues": [{
+							"id": "V_String",
+							"params": ["RawShrimp"]
+						}] },
+						{ "__identifier": "input_amounts", "__type": "Array<Int>", "__value": [1], "__tile": null, "defUid": 326, "realEditorValues": [{ "id": "V_Int", "params": [1] }] },
+						{ "__identifier": "output_items", "__type": "Array<LocalEnum.Items>", "__value": ["CookedShrimp"], "__tile": { "tilesetUid": 256, "x": 16, "y": 32, "w": 16, "h": 16 }, "defUid": 328, "realEditorValues": [{
+							"id": "V_String",
+							"params": ["CookedShrimp"]
+						}] },
+						{ "__identifier": "output_amounts", "__type": "Array<Int>", "__value": [1], "__tile": null, "defUid": 329, "realEditorValues": [{ "id": "V_Int", "params": [1] }] },
+						{ "__identifier": "checked_skills", "__type": "Array<LocalEnum.Skills>", "__value": ["Cooking"], "__tile": null, "defUid": 327, "realEditorValues": [{
+							"id": "V_String",
+							"params": ["Cooking"]
+						}] },
+						{ "__identifier": "checked_level", "__type": "Array<Int>", "__value": [1], "__tile": null, "defUid": 330, "realEditorValues": [{ "id": "V_Int", "params": [1] }] },
+						{ "__identifier": "checked_experience", "__type": "Array<Int>", "__value": [3], "__tile": null, "defUid": 331, "realEditorValues": [{ "id": "V_Int", "params": [3] }] },
+						{ "__identifier": "used_skill", "__type": "LocalEnum.Skills", "__value": "Cooking", "__tile": null, "defUid": 554, "realEditorValues": [{
+							"id": "V_String",
+							"params": ["Cooking"]
+						}] },
+						{ "__identifier": "used_cooldown", "__type": "Int", "__value": 600, "__tile": null, "defUid": 555, "realEditorValues": [{ "id": "V_Int", "params": [600] }] },
+						{ "__identifier": "crafting_station", "__type": "Array<LocalEnum.CraftingStations>", "__value": ["CookingPot"], "__tile": null, "defUid": 334, "realEditorValues": [{
+							"id": "V_String",
+							"params": ["CookingPot"]
+						}] },
+						{ "__identifier": "station_max_distance", "__type": "Array<Int>", "__value": [1], "__tile": null, "defUid": 337, "realEditorValues": [{ "id": "V_Int", "params": [1] }] },
+						{ "__identifier": "station_min_distance", "__type": "Array<Int>", "__value": [1], "__tile": null, "defUid": 338, "realEditorValues": [{ "id": "V_Int", "params": [1] }] },
+						{ "__identifier": "entity_type", "__type": "LocalEnum.EntityType", "__value": "Recipe", "__tile": null, "defUid": 507, "realEditorValues": [] }
+					],
+					"__worldX": 0,
+					"__worldY": 0
+				},
+				{
+					"__identifier": "Recipe",
+					"__grid": [1,0],
+					"__pivot": [0,0],
+					"__tags": ["Recipe"],
+					"__tile": { "tilesetUid": 256, "x": 192, "y": 96, "w": 16, "h": 16 },
+					"__smartColor": "#000000",
+					"iid": "8b6e2e00-3740-11f0-8347-c55bc3123b93",
+					"width": 16,
+					"height": 16,
+					"defUid": 267,
+					"px": [16,0],
+					"fieldInstances": [
+						{ "__identifier": "recipe_name", "__type": "String", "__value": "SmeltBronze", "__tile": null, "defUid": 274, "realEditorValues": [{
+							"id": "V_String",
+							"params": ["SmeltBronze"]
+						}] },
+						{ "__identifier": "input_items", "__type": "Array<LocalEnum.Items>", "__value": [ "TinOre", "CopperOre" ], "__tile": null, "defUid": 325, "realEditorValues": [ {
+							"id": "V_String",
+							"params": ["TinOre"]
+						}, {
+							"id": "V_String",
+							"params": ["CopperOre"]
+						} ] },
+						{ "__identifier": "input_amounts", "__type": "Array<Int>", "__value": [1,1], "__tile": null, "defUid": 326, "realEditorValues": [ { "id": "V_Int", "params": [1] }, { "id": "V_Int", "params": [1] } ] },
+						{ "__identifier": "output_items", "__type": "Array<LocalEnum.Items>", "__value": ["BronzeIngot"], "__tile": { "tilesetUid": 256, "x": 192, "y": 96, "w": 16, "h": 16 }, "defUid": 328, "realEditorValues": [{
+							"id": "V_String",
+							"params": ["BronzeIngot"]
+						}] },
+						{ "__identifier": "output_amounts", "__type": "Array<Int>", "__value": [1], "__tile": null, "defUid": 329, "realEditorValues": [{ "id": "V_Int", "params": [1] }] },
+						{ "__identifier": "checked_skills", "__type": "Array<LocalEnum.Skills>", "__value": ["Smithing"], "__tile": null, "defUid": 327, "realEditorValues": [{
+							"id": "V_String",
+							"params": ["Smithing"]
+						}] },
+						{ "__identifier": "checked_level", "__type": "Array<Int>", "__value": [1], "__tile": null, "defUid": 330, "realEditorValues": [{ "id": "V_Int", "params": [1] }] },
+						{ "__identifier": "checked_experience", "__type": "Array<Int>", "__value": [3], "__tile": null, "defUid": 331, "realEditorValues": [{ "id": "V_Int", "params": [3] }] },
+						{ "__identifier": "used_skill", "__type": "LocalEnum.Skills", "__value": "Smithing", "__tile": null, "defUid": 554, "realEditorValues": [{
+							"id": "V_String",
+							"params": ["Smithing"]
+						}] },
+						{ "__identifier": "used_cooldown", "__type": "Int", "__value": 600, "__tile": null, "defUid": 555, "realEditorValues": [{ "id": "V_Int", "params": [600] }] },
+						{ "__identifier": "crafting_station", "__type": "Array<LocalEnum.CraftingStations>", "__value": ["Furnace"], "__tile": null, "defUid": 334, "realEditorValues": [{
+							"id": "V_String",
+							"params": ["Furnace"]
+						}] },
+						{ "__identifier": "station_max_distance", "__type": "Array<Int>", "__value": [1], "__tile": null, "defUid": 337, "realEditorValues": [{ "id": "V_Int", "params": [1] }] },
+						{ "__identifier": "station_min_distance", "__type": "Array<Int>", "__value": [1], "__tile": null, "defUid": 338, "realEditorValues": [{ "id": "V_Int", "params": [1] }] },
+						{ "__identifier": "entity_type", "__type": "LocalEnum.EntityType", "__value": "Recipe", "__tile": null, "defUid": 507, "realEditorValues": [] }
+					],
+					"__worldX": 16,
+					"__worldY": 0
+				},
+				{
+					"__identifier": "Recipe",
+					"__grid": [3,0],
+					"__pivot": [0,0],
+					"__tags": ["Recipe"],
+					"__tile": { "tilesetUid": 256, "x": 96, "y": 176, "w": 16, "h": 16 },
+					"__smartColor": "#000000",
+					"iid": "8aeedd20-3740-11f0-8347-d5a6fc3ac7f3",
+					"width": 16,
+					"height": 16,
+					"defUid": 267,
+					"px": [48,0],
+					"fieldInstances": [
+						{ "__identifier": "recipe_name", "__type": "String", "__value": "SmithSword", "__tile": null, "defUid": 274, "realEditorValues": [{
+							"id": "V_String",
+							"params": ["SmithSword"]
+						}] },
+						{ "__identifier": "input_items", "__type": "Array<LocalEnum.Items>", "__value": ["IronIngot"], "__tile": null, "defUid": 325, "realEditorValues": [{
+							"id": "V_String",
+							"params": ["IronIngot"]
+						}] },
+						{ "__identifier": "input_amounts", "__type": "Array<Int>", "__value": [1], "__tile": null, "defUid": 326, "realEditorValues": [{ "id": "V_Int", "params": [1] }] },
+						{ "__identifier": "output_items", "__type": "Array<LocalEnum.Items>", "__value": ["Sword"], "__tile": { "tilesetUid": 256, "x": 96, "y": 176, "w": 16, "h": 16 }, "defUid": 328, "realEditorValues": [{
+							"id": "V_String",
+							"params": ["Sword"]
+						}] },
+						{ "__identifier": "output_amounts", "__type": "Array<Int>", "__value": [1], "__tile": null, "defUid": 329, "realEditorValues": [{ "id": "V_Int", "params": [1] }] },
+						{ "__identifier": "checked_skills", "__type": "Array<LocalEnum.Skills>", "__value": ["Smithing"], "__tile": null, "defUid": 327, "realEditorValues": [{
+							"id": "V_String",
+							"params": ["Smithing"]
+						}] },
+						{ "__identifier": "checked_level", "__type": "Array<Int>", "__value": [12], "__tile": null, "defUid": 330, "realEditorValues": [{ "id": "V_Int", "params": [12] }] },
+						{ "__identifier": "checked_experience", "__type": "Array<Int>", "__value": [16], "__tile": null, "defUid": 331, "realEditorValues": [{ "id": "V_Int", "params": [16] }] },
+						{ "__identifier": "used_skill", "__type": "LocalEnum.Skills", "__value": "Smithing", "__tile": null, "defUid": 554, "realEditorValues": [{
+							"id": "V_String",
+							"params": ["Smithing"]
+						}] },
+						{ "__identifier": "used_cooldown", "__type": "Int", "__value": 600, "__tile": null, "defUid": 555, "realEditorValues": [{ "id": "V_Int", "params": [600] }] },
+						{ "__identifier": "crafting_station", "__type": "Array<LocalEnum.CraftingStations>", "__value": ["Anvil"], "__tile": null, "defUid": 334, "realEditorValues": [{
+							"id": "V_String",
+							"params": ["Anvil"]
+						}] },
+						{ "__identifier": "station_max_distance", "__type": "Array<Int>", "__value": [1], "__tile": null, "defUid": 337, "realEditorValues": [{ "id": "V_Int", "params": [1] }] },
+						{ "__identifier": "station_min_distance", "__type": "Array<Int>", "__value": [1], "__tile": null, "defUid": 338, "realEditorValues": [{ "id": "V_Int", "params": [1] }] },
+						{ "__identifier": "entity_type", "__type": "LocalEnum.EntityType", "__value": "Recipe", "__tile": null, "defUid": 507, "realEditorValues": [] }
+					],
+					"__worldX": 48,
+					"__worldY": 0
+				},
+				{
+					"__identifier": "Recipe",
+					"__grid": [2,0],
+					"__pivot": [0,0],
+					"__tags": ["Recipe"],
+					"__tile": { "tilesetUid": 256, "x": 160, "y": 0, "w": 16, "h": 16 },
+					"__smartColor": "#000000",
+					"iid": "f04affb0-3740-11f0-8347-5de682bed7d4",
+					"width": 16,
+					"height": 16,
+					"defUid": 267,
+					"px": [32,0],
+					"fieldInstances": [
+						{ "__identifier": "recipe_name", "__type": "String", "__value": "SmeltIron", "__tile": null, "defUid": 274, "realEditorValues": [{
+							"id": "V_String",
+							"params": ["SmeltIron"]
+						}] },
+						{ "__identifier": "input_items", "__type": "Array<LocalEnum.Items>", "__value": ["IronOre"], "__tile": null, "defUid": 325, "realEditorValues": [{
+							"id": "V_String",
+							"params": ["IronOre"]
+						}] },
+						{ "__identifier": "input_amounts", "__type": "Array<Int>", "__value": [1], "__tile": null, "defUid": 326, "realEditorValues": [{ "id": "V_Int", "params": [1] }] },
+						{ "__identifier": "output_items", "__type": "Array<LocalEnum.Items>", "__value": ["IronIngot"], "__tile": { "tilesetUid": 256, "x": 160, "y": 0, "w": 16, "h": 16 }, "defUid": 328, "realEditorValues": [{
+							"id": "V_String",
+							"params": ["IronIngot"]
+						}] },
+						{ "__identifier": "output_amounts", "__type": "Array<Int>", "__value": [1], "__tile": null, "defUid": 329, "realEditorValues": [{ "id": "V_Int", "params": [1] }] },
+						{ "__identifier": "checked_skills", "__type": "Array<LocalEnum.Skills>", "__value": ["Smithing"], "__tile": null, "defUid": 327, "realEditorValues": [{
+							"id": "V_String",
+							"params": ["Smithing"]
+						}] },
+						{ "__identifier": "checked_level", "__type": "Array<Int>", "__value": [8], "__tile": null, "defUid": 330, "realEditorValues": [{ "id": "V_Int", "params": [8] }] },
+						{ "__identifier": "checked_experience", "__type": "Array<Int>", "__value": [8], "__tile": null, "defUid": 331, "realEditorValues": [{ "id": "V_Int", "params": [8] }] },
+						{ "__identifier": "used_skill", "__type": "LocalEnum.Skills", "__value": "Smithing", "__tile": null, "defUid": 554, "realEditorValues": [{
+							"id": "V_String",
+							"params": ["Smithing"]
+						}] },
+						{ "__identifier": "used_cooldown", "__type": "Int", "__value": 600, "__tile": null, "defUid": 555, "realEditorValues": [{ "id": "V_Int", "params": [600] }] },
+						{ "__identifier": "crafting_station", "__type": "Array<LocalEnum.CraftingStations>", "__value": ["Anvil"], "__tile": null, "defUid": 334, "realEditorValues": [{
+							"id": "V_String",
+							"params": ["Anvil"]
+						}] },
+						{ "__identifier": "station_max_distance", "__type": "Array<Int>", "__value": [1], "__tile": null, "defUid": 337, "realEditorValues": [{ "id": "V_Int", "params": [1] }] },
+						{ "__identifier": "station_min_distance", "__type": "Array<Int>", "__value": [1], "__tile": null, "defUid": 338, "realEditorValues": [{ "id": "V_Int", "params": [1] }] },
+						{ "__identifier": "entity_type", "__type": "LocalEnum.EntityType", "__value": "Recipe", "__tile": null, "defUid": 507, "realEditorValues": [] }
+					],
+					"__worldX": 32,
+					"__worldY": 0
+				}
+			]
+		},
+		{
+			"__identifier": "Crafting_Stations",
+			"__type": "Tiles",
+			"__cWid": 16,
+			"__cHei": 16,
+			"__gridSize": 16,
+			"__opacity": 1,
+			"__pxTotalOffsetX": 0,
+			"__pxTotalOffsetY": 0,
+			"__tilesetDefUid": 318,
+			"__tilesetRelPath": "../sprites/Cute_Fantasy/CombinedCraftingStations.png",
+			"iid": "ab1f8a10-3740-11f0-8347-355a509dbf40",
+			"levelId": 272,
+			"layerDefUid": 324,
+			"pxOffsetX": 0,
+			"pxOffsetY": 0,
+			"visible": true,
+			"optionalRules": [],
+			"intGridCsv": [],
+			"autoLayerTiles": [],
+			"seed": 3915556,
+			"overrideTilesetUid": null,
+			"gridTiles": [],
+			"entityInstances": []
+		},
+		{
+			"__identifier": "Instances",
+			"__type": "IntGrid",
+			"__cWid": 16,
+			"__cHei": 16,
+			"__gridSize": 16,
+			"__opacity": 0.3,
+			"__pxTotalOffsetX": 0,
+			"__pxTotalOffsetY": 0,
+			"__tilesetDefUid": null,
+			"__tilesetRelPath": null,
+			"iid": "e02ef330-3740-11f0-8347-d584ea6c624e",
+			"levelId": 272,
+			"layerDefUid": 322,
+			"pxOffsetX": 0,
+			"pxOffsetY": 0,
+			"visible": true,
+			"optionalRules": [],
+			"intGridCsv": [
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0
+			],
+			"autoLayerTiles": [],
+			"seed": 9000351,
+			"overrideTilesetUid": null,
+			"gridTiles": [],
+			"entityInstances": []
+		},
+		{
+			"__identifier": "CliffStairs",
+			"__type": "IntGrid",
+			"__cWid": 16,
+			"__cHei": 16,
+			"__gridSize": 16,
+			"__opacity": 1,
+			"__pxTotalOffsetX": 0,
+			"__pxTotalOffsetY": 0,
+			"__tilesetDefUid": 1,
+			"__tilesetRelPath": "../sprites/Cute_Fantasy/Tiles/tiles_full.png",
+			"iid": "9112b022-3740-11f0-8347-b7a4ceceb9df",
+			"levelId": 272,
+			"layerDefUid": 237,
+			"pxOffsetX": 0,
+			"pxOffsetY": 0,
+			"visible": true,
+			"optionalRules": [],
+			"intGridCsv": [
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0
+			],
+			"autoLayerTiles": [],
+			"seed": 6378174,
+			"overrideTilesetUid": null,
+			"gridTiles": [],
+			"entityInstances": []
+		},
+		{
+			"__identifier": "Cliffs",
+			"__type": "IntGrid",
+			"__cWid": 16,
+			"__cHei": 16,
+			"__gridSize": 16,
+			"__opacity": 1,
+			"__pxTotalOffsetX": 0,
+			"__pxTotalOffsetY": 0,
+			"__tilesetDefUid": 1,
+			"__tilesetRelPath": "../sprites/Cute_Fantasy/Tiles/tiles_full.png",
+			"iid": "9112b023-3740-11f0-8347-6db66756e419",
+			"levelId": 272,
+			"layerDefUid": 176,
+			"pxOffsetX": 0,
+			"pxOffsetY": 0,
+			"visible": true,
+			"optionalRules": [],
+			"intGridCsv": [
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0
+			],
+			"autoLayerTiles": [],
+			"seed": 3872627,
+			"overrideTilesetUid": null,
+			"gridTiles": [],
+			"entityInstances": []
+		},
+		{
+			"__identifier": "Ground_Tiles",
+			"__type": "IntGrid",
+			"__cWid": 16,
+			"__cHei": 16,
+			"__gridSize": 16,
+			"__opacity": 1,
+			"__pxTotalOffsetX": 0,
+			"__pxTotalOffsetY": 0,
+			"__tilesetDefUid": 1,
+			"__tilesetRelPath": "../sprites/Cute_Fantasy/Tiles/tiles_full.png",
+			"iid": "9112b024-3740-11f0-8347-65ddadf79085",
+			"levelId": 272,
+			"layerDefUid": 2,
+			"pxOffsetX": 0,
+			"pxOffsetY": 0,
+			"visible": true,
+			"optionalRules": [],
+			"intGridCsv": [
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0
+			],
+			"autoLayerTiles": [],
+			"seed": 6833180,
+			"overrideTilesetUid": null,
+			"gridTiles": [],
+			"entityInstances": []
+		}
+	],
+	"__neighbours": [{ "levelIid": "5843bf80-3740-11f0-999a-0b4a4b694b67", "dir": "n" }]
+}

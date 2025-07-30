@@ -2,23 +2,21 @@ use bevy::ecs::bundle::Bundle;
 use bevy::platform::collections::HashMap;
 use bevy::prelude::*;
 use bevy_ecs_tilemap::prelude::*;
+use ldtk_rust::bevy::LdtkMap;
 
-use super::assets::TiledMap;
+
+#[derive(Default, Component)]
+pub struct LdtkMapConfig {
+    pub selected_level: usize,
+}
+
+#[derive(Default, Component)]
+pub struct LdtkMapHandle(pub Handle<LdtkMap>);
 
 #[derive(Default, Bundle)]
-pub struct TiledMapBundle {
-    pub tiled_map: TiledMapHandle,
-    pub storage: TiledLayersStorage,
+pub struct LdtkMapBundle {
+    pub ldtk_map: LdtkMapHandle,
+    pub ldtk_map_config: LdtkMapConfig,
     pub transform: Transform,
     pub global_transform: GlobalTransform,
-    pub render_settings: TilemapRenderSettings,
 }
-
-// Stores a list of tiled layers.
-#[derive(Component, Default)]
-pub struct TiledLayersStorage {
-    pub storage: HashMap<u32, Entity>,
-}
-
-#[derive(Component, Default)]
-pub struct TiledMapHandle(pub Handle<TiledMap>);
