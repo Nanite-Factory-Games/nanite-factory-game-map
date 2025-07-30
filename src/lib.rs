@@ -55,6 +55,20 @@ pub struct MapConfiguration {
     pub loop_timeline: bool
 }
 
+impl MapConfiguration {
+    pub fn new(tickrate : u64, controls_enabled: bool, assets: HashMap<String, Vec<u8>>, follow_id: Option<u64>, canvas_id: Option<String>, loop_timeline: bool) -> MapConfiguration {
+        MapConfiguration {
+            tickrate,
+            controls_enabled,
+            assets,
+            camera_position: Vec2::new(0., 0.),
+            follow_id,
+            canvas_id,
+            loop_timeline,
+        }
+    }
+}
+
 #[derive(Deserialize)]
 pub struct CameraConfiguration {
     pub position: Vec2,
