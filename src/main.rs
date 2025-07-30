@@ -10,7 +10,7 @@ fn main() {
     {
         use std::collections::HashMap;
         use bevy::prelude::*;
-        use nanite_factory_game_map::MapConfiguration;
+        use nanite_factory_game_map::{get_assets_recursively, MapConfiguration};
         // Create a hashmap of assets to the bytes of the asset for every file in the assets folder
         let mut assets = HashMap::new();
         get_assets_recursively(Path::new("assets"), &mut assets);
@@ -26,20 +26,5 @@ fn main() {
             canvas_id: None,
         }, receiver);
         app.run();
-    }
-}
-#[cfg(not(all(target_arch = "wasm32", target_os = "unknown")))]
-fn get_assets_recursively(path: &Path, assets: &mut HashMap<String, Vec<u8>>) {
-    
-    for entry in std::fs::read_dir(path).unwrap() {
-        let entry = entry.unwrap();
-        if entry.path().is_dir() {
-            get_assets_recursively(&entry.path(), assets);
-        } else {
-            let path = entry.path().to_path_buf();
-            let path_string = path.to_str().unwrap().to_string().replace("assets/", "");
-            let bytes = std::fs::read(path).unwrap();
-            assets.insert(path_string.clone(), bytes);
-        }
     }
 }

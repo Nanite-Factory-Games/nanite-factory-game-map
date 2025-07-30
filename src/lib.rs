@@ -82,6 +82,22 @@ fn register(app: &mut App) {
         .add_plugins(timeline);
 }
 
+#[cfg(not(all(target_arch = "wasm32", target_os = "unknown")))]
+pub fn get_assets_recursively(path: &Path, assets: &mut HashMap<String, Vec<u8>>) {
+    
+    for entry in std::fs::read_dir(path).unwrap() {
+        let entry = entry.unwrap();
+        if entry.path().is_dir() {
+            get_assets_recursively(&entry.path(), assets);
+        } else {
+            let path = entry.path().to_path_buf();
+            let path_string = path.to_str().unwrap().to_string().replace("assets/", "");
+            let bytes = std::fs::read(path).unwrap();
+            assets.insert(path_string.clone(), bytes);
+        }
+    }
+}
+
 pub fn configure(configuration: MapConfiguration, frame_receiver: crossbeam_channel::Receiver<TimelineFrame>) -> App {
     let mut app = App::new();
 
