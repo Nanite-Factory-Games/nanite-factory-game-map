@@ -34,8 +34,9 @@ pub fn advance_timeline(
             *current_frame = frame.clone();
         }
     } else {
-        let new_frame = timeline.0.pop_front().unwrap();
-        *current_frame = new_frame;
+        if let Some(frame) = timeline.0.pop_front() {
+            *current_frame = frame;
+        }
     }
 }
 
@@ -91,7 +92,7 @@ pub fn move_characters(
                 } else {
                     "walk_left"
                 };
-                info!("animating character {} to {}", id, animation_tag);
+                // info!("animating character {} to {}", id, animation_tag);
                 let animation = AseAnimation {
                     aseprite: asset_server.load("player.aseprite"),
                     animation: Animation::tag(animation_tag),
