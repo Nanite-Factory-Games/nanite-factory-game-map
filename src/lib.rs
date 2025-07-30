@@ -98,7 +98,6 @@ fn register(app: &mut App) {
 
 #[cfg(not(all(target_arch = "wasm32", target_os = "unknown")))]
 pub fn get_assets_recursively(path: &Path, assets: &mut HashMap<String, Vec<u8>>) {
-    
     for entry in std::fs::read_dir(path).unwrap() {
         let entry = entry.unwrap();
         if entry.path().is_dir() {

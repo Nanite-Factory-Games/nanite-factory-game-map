@@ -3,11 +3,9 @@ use bevy::{log, platform::collections::HashMap, prelude::*};
 use bevy_ecs_tilemap::prelude::*;
 use ldtk_rust::bevy::LdtkMap;
 
-
 use super::components::*;
 
 pub fn startup(mut commands: Commands, asset_server: Res<AssetServer>) {
-
     let handle = LdtkMapHandle(asset_server.load("memory://map/map.ldtk"));
 
     commands.spawn(LdtkMapBundle {
@@ -22,7 +20,7 @@ pub fn process_loaded_maps(
     maps: Res<Assets<LdtkMap>>,
     mut query: Query<(Entity, &LdtkMapHandle, &LdtkMapConfig)>,
     new_maps: Query<&LdtkMapHandle, Added<LdtkMapHandle>>,
-) -> Result<(), BevyError>{
+) -> Result<(), BevyError> {
     let mut changed_maps = Vec::<AssetId<LdtkMap>>::default();
     for event in map_events.read() {
         match event {
@@ -55,7 +53,7 @@ pub fn process_loaded_maps(
             if map_handle.0.id() != *changed_map {
                 continue;
             }
-            
+
             if let Some(ldtk_map) = maps.get(&map_handle.0) {
                 // Despawn all existing tilemaps for this LdtkMap
                 commands.entity(entity).despawn_related::<Children>();
@@ -87,7 +85,10 @@ pub fn process_loaded_maps(
                     println!("No layers found in level!");
                     continue;
                 } else {
-                    println!("Found {} layers in level!", level.layer_instances.as_ref().unwrap().len());
+                    println!(
+                        "Found {} layers in level!",
+                        level.layer_instances.as_ref().unwrap().len()
+                    );
                 }
 
                 // We will create a tilemap for each layer in the following loop
@@ -127,15 +128,17 @@ pub fn process_loaded_maps(
                                     position,
                                     tilemap_id: TilemapId(map_entity),
                                     texture_index: TileTextureIndex(tile.t as u32),
-                                    flip: TileFlip { x: flip_x, y: flip_y, d: false },
+                                    flip: TileFlip {
+                                        x: flip_x,
+                                        y: flip_y,
+                                        d: false,
+                                    },
                                     ..default()
                                 })
                                 .id();
 
                             storage.set(&position, tile_entity);
                         }
-
-                        
 
                         let grid_size = tile_size.into();
                         let map_type = TilemapType::default();
@@ -156,49 +159,50 @@ pub fn process_loaded_maps(
                         println!("Loading layer {}", layer.identifier);
 
                         for entity in layer.entity_instances.iter() {
-                            
-                            let (image, _) = tilesets
-                                .get(
-                                    &entity.tile
-                                        .as_ref()
-                                        .context("An entity was missing tile definition")?
-                                        .tileset_uid as _
-                                    )
-                                .context("An entity was missing tile definition")?
-                                .clone();
+                            if let Some(tile_data) = entity.tile.as_ref() {
+                                if let Some((image, _)) = tilesets.get(&tile_data.tileset_uid as _) {
+                                    let level_width_pixels = level.px_wid;
+                                    let level_height_pixels = level.px_hei;
 
-                            let level_width_pixels = level.px_wid;
-                            let level_height_pixels = level.px_hei;
-                            
+                                    let entity_tile = entity.tile.as_ref().context(format!(
+                                        "An entity was missing tile definition: {:?}",
+                                        entity.identifier
+                                    ))?;
+                                    let texture_x1 = entity_tile.x as f32;
+                                    let texture_y1 = entity_tile.y as f32;
+                                    let texture_x2 = texture_x1 + entity_tile.w as f32;
+                                    let texture_y2 = texture_y1 + entity_tile.h as f32;
 
-                            
-                            
-                            let entity_tile = entity.tile.as_ref().context("An entity was missing tile definition")?;
-                            let texture_x1 = entity_tile.x as f32;
-                            let texture_y1 = entity_tile.y as f32;
-                            let texture_x2 = texture_x1 + entity_tile.w as f32;
-                            let texture_y2 = texture_y1 + entity_tile.h as f32;
+                                    let pivot_x = entity.pivot[0] as f32 * entity_tile.w as f32;
+                                    let pivot_y = entity.pivot[1] as f32 * entity_tile.h as f32;
 
-                            let pivot_x = entity.pivot[0] as f32 * entity_tile.w as f32;
-                            let pivot_y = entity.pivot[1] as f32 * entity_tile.h as f32;
+                                    // Adjust to match Bevy's center-based coordinate system and flipped Y
+                                    let x = entity.px[0] as f32
+                                        + ((entity_tile.w - default_grid_size) as f32 / 2.0)
+                                        - pivot_x
+                                        - (level_width_pixels as f32 / 2.0)
+                                        + default_grid_size as f32 / 2.0;
+                                    let y = (level_height_pixels as f32
+                                        - entity.px[1] as f32
+                                        - ((entity_tile.h - default_grid_size) as f32 / 2.0)
+                                        + pivot_y)
+                                        - (level_height_pixels as f32 / 2.0)
+                                        - default_grid_size as f32 / 2.0;
 
-                            // Adjust to match Bevy's center-based coordinate system and flipped Y
-                            let x = entity.px[0] as f32 + ((entity_tile.w - default_grid_size) as f32 / 2.0) - pivot_x - (level_width_pixels as f32 / 2.0) + default_grid_size as f32 / 2.0;
-                            let y = (level_height_pixels as f32 - entity.px[1] as f32 - ((entity_tile.h - default_grid_size) as f32 / 2.0) + pivot_y) - (level_height_pixels as f32 / 2.0) - default_grid_size as f32 / 2.0;
-                            
+                                    commands.spawn((
+                                        Sprite {
+                                            image: image.clone(),
+                                            rect: Some(Rect::new(
+                                                texture_x1, texture_y1, texture_x2, texture_y2,
+                                            )),
+                                            ..Default::default()
+                                        },
+                                        Transform::from_xyz(x, y, layer_id as f32),
+                                    ));
 
-                            commands.spawn((
-                                Sprite {
-                                    image,
-                                    rect: Some(Rect::new(texture_x1, texture_y1, texture_x2, texture_y2)),
-                                    ..Default::default()
-                                },
-                                Transform::from_xyz(x, y, layer_id as f32)
-                            ));
-
-                            
-                            
-                            println!("Entity added");
+                                    println!("Entity added");
+                                }
+                            }
                         }
                     }
                 }
