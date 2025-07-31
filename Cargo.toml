@@ -28,6 +28,7 @@ bevy_aseprite_ultra = "0.6.1"
 wasm-bindgen-futures = "0.4.50"
 ldtk_rust = { git = "https://github.com/daniel-brenot/ldtk_rust.git", features = ["bevy"] }
 serde_json = "1.0.141"
+bevy-inspector-egui = "0.32.0"
 
 [features]
 default = ["atlas", "render"]

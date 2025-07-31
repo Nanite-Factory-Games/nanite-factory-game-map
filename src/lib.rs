@@ -1,10 +1,15 @@
-use std::{collections::{HashMap, VecDeque}, hash::Hash, path::Path, sync::Mutex, time::Duration};
-
-use bevy::{
-    log::tracing, prelude::*
+use std::{
+    collections::{HashMap, VecDeque},
+    hash::Hash,
+    path::Path,
+    sync::Mutex,
+    time::Duration,
 };
 
+use bevy::{ecs::system::command::init_resource, log::tracing, prelude::*};
+
 use actions::actions;
+use bevy_inspector_egui::{bevy_egui::EguiPlugin, quick::{FilterQueryInspectorPlugin, WorldInspectorPlugin}, DefaultInspectorConfigPlugin};
 use camera::camera;
 use entities::entities;
 use selection::selection;
@@ -28,6 +33,8 @@ use bevy::asset::io::{
     memory::{Dir, MemoryAssetReader},
 };
 
+use crate::entities::components::CharacterEntity;
+
 #[derive(Resource)]
 struct MemoryDir {
     dir: Dir,
@@ -42,7 +49,6 @@ struct Timeline(VecDeque<TimelineFrame>);
 #[derive(Resource)]
 pub struct LoopTimeline(pub bool);
 
-
 #[derive(Deserialize)]
 pub struct MapConfiguration {
     pub tickrate: u64,
@@ -52,11 +58,18 @@ pub struct MapConfiguration {
     /// The id of the character entity to follow
     pub follow_id: Option<u64>,
     pub canvas_id: Option<String>,
-    pub loop_timeline: bool
+    pub loop_timeline: bool,
 }
 
 impl MapConfiguration {
-    pub fn new(tickrate : u64, controls_enabled: bool, assets: HashMap<String, Vec<u8>>, follow_id: Option<u64>, canvas_id: Option<String>, loop_timeline: bool) -> MapConfiguration {
+    pub fn new(
+        tickrate: u64,
+        controls_enabled: bool,
+        assets: HashMap<String, Vec<u8>>,
+        follow_id: Option<u64>,
+        canvas_id: Option<String>,
+        loop_timeline: bool,
+    ) -> MapConfiguration {
         MapConfiguration {
             tickrate,
             controls_enabled,
@@ -86,8 +99,7 @@ pub struct MapConfigurationUpdate {
 static FRAME_SENDER: Mutex<Option<crossbeam_channel::Sender<TimelineFrame>>> = Mutex::new(None);
 
 fn register(app: &mut App) {
-    app
-        .add_plugins(actions)
+    app.add_plugins(actions)
         .add_plugins(camera)
         .add_plugins(shared)
         .add_plugins(entities)
@@ -111,7 +123,10 @@ pub fn get_assets_recursively(path: &Path, assets: &mut HashMap<String, Vec<u8>>
     }
 }
 
-pub fn configure(configuration: MapConfiguration, frame_receiver: crossbeam_channel::Receiver<TimelineFrame>) -> App {
+pub fn configure(
+    configuration: MapConfiguration,
+    frame_receiver: crossbeam_channel::Receiver<TimelineFrame>,
+) -> App {
     let mut app = App::new();
 
     // Set up memory asset reader
@@ -139,6 +154,7 @@ pub fn configure(configuration: MapConfiguration, frame_receiver: crossbeam_chan
     // Set wether the timeline should loop
     app.insert_resource(LoopTimeline(configuration.loop_timeline));
 
+
     // Create the window
     app.add_plugins(
         DefaultPlugins
@@ -151,6 +167,11 @@ pub fn configure(configuration: MapConfiguration, frame_receiver: crossbeam_chan
             })
             .set(ImagePlugin::default_nearest()),
     );
+    // app.add_plugins(EguiPlugin::default());
+    // app.register_type::<CharacterEntity>();
+    // app.register_type::<Sprite>();
+    // app.add_plugins(FilterQueryInspectorPlugin::<(With<CharacterEntity>, With<Transform>)>::new());
+    // app.add_plugins(FilterQueryInspectorPlugin::<(With<Sprite>, With<Transform>)>::new());
 
     // Set tickrate
     app.insert_resource(Time::<Fixed>::from_duration(Duration::from_millis(
@@ -197,7 +218,8 @@ pub fn submit_timeline_frame(frame: JsValue) {
         Ok(frame) => {
             // Don't freak out, this is probably not an issue
             let frame_sender_lock = FRAME_SENDER.lock().unwrap();
-            frame_sender_lock.as_ref()
+            frame_sender_lock
+                .as_ref()
                 .expect("Frame sender not initialized")
                 .send(frame)
                 .unwrap();

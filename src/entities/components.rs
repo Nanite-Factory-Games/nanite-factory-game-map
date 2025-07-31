@@ -1,7 +1,7 @@
-use bevy::ecs::component::Component;
+use bevy::{ecs::component::Component, reflect::Reflect};
 
 
-#[derive(Component)]
+#[derive(Component, Reflect)]
 pub struct CharacterEntity {
     pub name: String,
 }

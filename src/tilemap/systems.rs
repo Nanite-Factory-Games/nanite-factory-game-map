@@ -108,7 +108,6 @@ pub fn process_loaded_maps(
                     .rev()
                     .enumerate()
                 {
-                    let layer_id = 0.0;
                     if let Some(uid) = layer.tileset_def_uid {
                         let (texture, tileset) = tilesets.get(&uid).unwrap().clone();
 
@@ -213,7 +212,7 @@ pub fn process_loaded_maps(
                                             )),
                                             ..Default::default()
                                         },
-                                        Transform::from_xyz(x, y, 1.0 as f32),
+                                        Transform::from_xyz(x, y, layer_id as f32),
                                     ));
 
                                     println!("Entity added");

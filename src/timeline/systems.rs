@@ -109,6 +109,7 @@ pub fn move_characters(
                 CharacterEntity {
                     name: format!("character_{}", id)
                 },
+                Sprite::default(),
                 AseAnimation {
                     aseprite: asset_server.load("player.aseprite"),
                     animation: Animation::tag("idle_down"),
