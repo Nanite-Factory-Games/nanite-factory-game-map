@@ -73,8 +73,16 @@ pub fn process_loaded_maps(
                 let default_grid_size = ldtk_map.project.default_grid_size;
                 let level = &ldtk_map.project.levels[map_config.selected_level];
 
+                let world_x = level.world_x;
+                let world_y = level.world_y.abs();
+
                 let map_tile_count_x = (level.px_wid / default_grid_size) as u32;
                 let map_tile_count_y = (level.px_hei / default_grid_size) as u32;
+
+                let level_grid_offset_x =
+                    ((world_x / level.px_wid) * (map_tile_count_x as i64 - 1)) as u32;
+                let level_grid_offset_y =
+                    (((world_y / level.px_hei) - 1) * (map_tile_count_y as i64 - 1)) as u32;
 
                 let size = TilemapSize {
                     x: map_tile_count_x,
@@ -122,7 +130,7 @@ pub fn process_loaded_maps(
                             };
                             let flip_x = tile.f & 1 != 0;
                             let flip_y = tile.f & 2 != 0;
-                            position.y = map_tile_count_y - position.y - 1;
+                            position.y = (map_tile_count_y - 1) - position.y;
                             let tile_entity = commands
                                 .spawn(TileBundle {
                                     position,
@@ -152,7 +160,11 @@ pub fn process_loaded_maps(
                             texture: TilemapTexture::Single(texture),
                             tile_size,
                             anchor: TilemapAnchor::Center,
-                            transform: Transform::from_xyz(0.0, 0.0, layer_id as f32),
+                            transform: Transform::from_xyz(
+                                (level.px_wid / 2) as f32 + level_grid_offset_x as f32,
+                                (level.px_hei / 2) as f32 + level_grid_offset_y as f32,
+                                layer_id as f32,
+                            ),
                             ..default()
                         });
                     } else {
@@ -160,7 +172,8 @@ pub fn process_loaded_maps(
 
                         for entity in layer.entity_instances.iter() {
                             if let Some(tile_data) = entity.tile.as_ref() {
-                                if let Some((image, _)) = tilesets.get(&tile_data.tileset_uid as _) {
+                                if let Some((image, _)) = tilesets.get(&tile_data.tileset_uid as _)
+                                {
                                     let level_width_pixels = level.px_wid;
                                     let level_height_pixels = level.px_hei;
 
@@ -180,14 +193,16 @@ pub fn process_loaded_maps(
                                     let x = entity.px[0] as f32
                                         + ((entity_tile.w - default_grid_size) as f32 / 2.0)
                                         - pivot_x
-                                        - (level_width_pixels as f32 / 2.0)
-                                        + default_grid_size as f32 / 2.0;
+                                        // - (level_width_pixels as f32 / 2.0);
+                                        + default_grid_size as f32 / 2.0
+                                        + level_grid_offset_x as f32;
                                     let y = (level_height_pixels as f32
                                         - entity.px[1] as f32
                                         - ((entity_tile.h - default_grid_size) as f32 / 2.0)
                                         + pivot_y)
-                                        - (level_height_pixels as f32 / 2.0)
-                                        - default_grid_size as f32 / 2.0;
+                                        // - (level_height_pixels as f32 / 2.0);
+                                        - default_grid_size as f32 / 2.0
+                                        + level_grid_offset_y as f32;
 
                                     commands.spawn((
                                         Sprite {
