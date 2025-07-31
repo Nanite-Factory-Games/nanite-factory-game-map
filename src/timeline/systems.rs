@@ -54,7 +54,7 @@ pub fn move_characters(
     mut character_entity_map: ResMut<EntityIdMap>,
     asset_server: Res<AssetServer>,
     frame_type: Res<FrameType>,
-    character_query: Query<(&Transform)>,
+    character_query: Query<&Transform>,
     tick_rate: Res<Time::<Fixed>>
 ) {
     if *frame_type != FrameType::Movement { return } 
@@ -92,7 +92,7 @@ pub fn move_characters(
                 } else {
                     "walk_left"
                 };
-                // info!("animating character {} to {}", id, animation_tag);
+                info!("animating character {} to {} at {}, which in pixels is {}", id, animation_tag, position, position.extend(1.0) * Vec3::new(16., 16., 49.0));
                 let animation = AseAnimation {
                     aseprite: asset_server.load("player.aseprite"),
                     animation: Animation::tag(animation_tag),
