@@ -3,9 +3,10 @@ use bevy::{core_pipeline::core_2d::Camera2d, ecs::system::Commands, input::mouse
 use bevy_pancam::{DirectionKeys, PanCam};
 
 use crate::shared::resources::ControlsEnabled;
+use crate::CameraConfiguration;
 
 
-pub fn setup(mut commands: Commands) {
+pub fn setup(mut commands: Commands, config: Res<CameraConfiguration>) {
     commands.spawn((
         Camera2d,
         PanCam {
@@ -37,6 +38,7 @@ pub fn setup(mut commands: Commands) {
             // maximum y position of the camera window
             max_y: f32::INFINITY,
         },
+        Transform::from_translation(Vec3::new(config.position.x * 16., config.position.y * 16., 0.)),
     ));
 }
 

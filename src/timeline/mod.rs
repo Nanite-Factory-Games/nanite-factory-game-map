@@ -23,7 +23,7 @@ pub fn timeline(app: &mut App) {
         .insert_resource(LoopTimelineIndex(0))
         // This is going to get flipped immediately so we set it to movement because we want to start with action
         .insert_resource(FrameType::Movement)
-        .add_systems(Update, consume_timeline)
+        .add_systems(FixedUpdate, consume_timeline)
         .add_systems(FixedUpdate, alternate_frame.run_if(frame_available))
         .add_systems(FixedUpdate, advance_timeline.after(alternate_frame))
         .add_systems(FixedUpdate, (
@@ -32,7 +32,6 @@ pub fn timeline(app: &mut App) {
                 move_npcs,
                 animate_npcs
             )
-            .run_if(frame_available)
             .after(advance_timeline)
         );
 }

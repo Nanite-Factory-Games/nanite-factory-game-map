@@ -82,7 +82,7 @@ impl MapConfiguration {
     }
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Resource)]
 pub struct CameraConfiguration {
     pub position: Vec2,
 }
@@ -153,6 +153,8 @@ pub fn configure(
 
     // Set wether the timeline should loop
     app.insert_resource(LoopTimeline(configuration.loop_timeline));
+
+    app.insert_resource(CameraConfiguration { position: configuration.camera_position });
 
 
     // Create the window

@@ -1,3 +1,5 @@
+use std::time;
+
 use bevy::prelude::*;
 use bevy::log::info;
 use bevy_aseprite_ultra::prelude::{Animation, AseAnimation};
@@ -25,6 +27,7 @@ pub fn advance_timeline(
     mut loop_timeline_index: ResMut<LoopTimelineIndex>
 ) {
     if *frame_type != FrameType::Action { return }
+    // println!("advancing timeline");
     if loop_timeline.0 {
         loop_timeline_index.0 += 1;
         if loop_timeline_index.0 >= timeline.0.len() {
@@ -36,6 +39,8 @@ pub fn advance_timeline(
     } else {
         if let Some(frame) = timeline.0.pop_front() {
             *current_frame = frame;
+        } else {
+            // println!("timeline is empty");
         }
     }
 }
@@ -45,6 +50,11 @@ pub fn consume_timeline(
     mut timeline: ResMut<Timeline>,
     timeline_receiver: ResMut<FrameReceiver>,
 ) {
+    println!("consuming timeline");
+    if timeline_receiver.0.is_empty() {
+        println!("timeline receiver is empty");
+        return;
+    }
     timeline.0.extend(timeline_receiver.0.try_iter());
 }
 
