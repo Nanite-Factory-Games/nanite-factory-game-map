@@ -68,7 +68,7 @@ pub fn move_characters(
         if let Some(entity) = character_map.get(id) {
             let transform = character_query.get(*entity).unwrap();
             let mut end = position.extend(1.0) * Vec3::new(16., 16., 49.0);
-            end.x -= 8.;
+            end.x += 8.;
             end.y += 8.;
             if transform.translation.x != end.x || transform.translation.y != end.y {
                 // Tween the movement of the character between its current position and the next
@@ -107,7 +107,7 @@ pub fn move_characters(
         } else {
             info!("spawning character {} at {}", id, position);
             let mut tf = Transform::from_translation(position.extend(1.0) * Vec3::new(16., 16., 49.0));
-            tf.translation.x -= 8.;
+            tf.translation.x += 8.;
             tf.translation.y += 8.;
             let entity = commands.spawn((
                 tf,
