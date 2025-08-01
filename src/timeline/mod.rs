@@ -22,16 +22,10 @@ pub fn timeline(app: &mut App) {
         .insert_resource(TimelineFrame::default())
         .insert_resource(LoopTimelineIndex(0))
         // This is going to get flipped immediately so we set it to movement because we want to start with action
-        .insert_resource(FrameType::Movement)
+        .insert_resource(FrameType::Action)
         .add_systems(FixedUpdate, consume_timeline)
-        .add_systems(FixedUpdate, alternate_frame.run_if(frame_available))
-        .add_systems(FixedUpdate, advance_timeline.after(alternate_frame))
-        .add_systems(FixedUpdate, (
-                move_characters,
-                animate_characters,
-                move_npcs,
-                animate_npcs
-            )
-            .after(advance_timeline)
-        );
+        .add_systems(FixedUpdate, alternate_frame.run_if(is_frame_available))
+        .add_systems(FixedUpdate, advance_timeline.run_if(is_movement_frame).after(consume_timeline))
+        .add_systems(FixedUpdate, (move_characters, move_npcs).run_if(is_movement_frame))
+        .add_systems(FixedUpdate, (animate_characters, animate_npcs).run_if(is_action_frame));
 }

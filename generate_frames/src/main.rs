@@ -79,7 +79,6 @@ fn main() {
             },
             tiled::LayerType::Objects(objects) => {
                 for object in objects.objects() {
-                    // println!("{:?}", object);
                     if let Some(_) = object.get_tile() {}
                 }
             }
@@ -137,7 +136,6 @@ fn create_scenario_1(
     ).unwrap().0;
     
     let frame_per_tile = (NUM_FRAMES as f32 / result.len() as f32) / 2.0;
-    println!("Frames per tile: {}", frame_per_tile);
     let mut previous_coord = result[0];
     for i in 0..NUM_FRAMES {
         let mut frame = TimelineFrame {
@@ -152,7 +150,6 @@ fn create_scenario_1(
         }
         
         let frame_coord = result[index];
-        println!("Frame {}: {:?}", i, frame_coord);
         // Tiled wont show us the correct coordinates so we have to flip the y axis
         frame.character_movements.insert(0, Vec2::new(frame_coord.0 as f32, 511.0-frame_coord.1 as f32));
         // We want to show the fishing animation on this one when its at the spot

@@ -30,7 +30,6 @@ pub fn tile_down_handler(
 
         // Get cursor position in world coordinates
         if let Some(cursor_pos) = window.cursor_position() {
-            // println!("cursor_pos: {:?}", cursor_pos);
             let (camera, camera_transform) = q_camera.single()?;
             let pos = camera
                 .viewport_to_world_2d(camera_transform, cursor_pos)
@@ -68,7 +67,6 @@ pub fn draw_box_system(
 
     // Get cursor position in world coordinates
     if let Some(cursor_pos) = window.cursor_position() {
-        // println!("cursor_pos: {:?}", cursor_pos);
         let (camera, camera_transform) = q_camera.single()?;
         let pos = camera
             .viewport_to_world_2d(camera_transform, cursor_pos)

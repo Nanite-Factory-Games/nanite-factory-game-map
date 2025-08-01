@@ -17,7 +17,7 @@ fn main() {
         let (sender, receiver) = crossbeam_channel::unbounded::<TimelineFrame>();
 
         let mut app = nanite_factory_game_map::configure(MapConfiguration {
-            tickrate: 30,
+            tickrate: 240,
             controls_enabled: true,
             assets,
             camera_position: Vec2::new(200., 200.),
@@ -26,9 +26,9 @@ fn main() {
             canvas_id: None,
         }, receiver);
         thread::spawn(move || {
+            let server_tickrate = 240;
             // Walk in a square pattern indefinitely
             loop {
-                println!("looping");
                 for x in 10..100 {
                     let mut frame = TimelineFrame {
                         character_movements: HashMap::new(),
@@ -38,8 +38,7 @@ fn main() {
                     };
                     frame.character_movements.insert(0, Vec2::new(x as f32, 10.));
                     sender.send(frame).unwrap();
-                    println!("sent frame");
-                    std::thread::sleep(std::time::Duration::from_millis(1000/10));
+                    std::thread::sleep(std::time::Duration::from_millis(1000/server_tickrate));
                 }
                 for y in 10..100 {
                     let mut frame = TimelineFrame {
@@ -50,9 +49,7 @@ fn main() {
                     };
                     frame.character_movements.insert(0, Vec2::new(100.0, y as f32));
                     sender.send(frame).unwrap();
-                    println!("sent frame");
-
-                    std::thread::sleep(std::time::Duration::from_millis(1000/10));
+                    std::thread::sleep(std::time::Duration::from_millis(1000/server_tickrate));
 
                 }
                 for x in (10..100).rev() {
@@ -64,9 +61,7 @@ fn main() {
                     };
                     frame.character_movements.insert(0, Vec2::new(x as f32, 100.));
                     sender.send(frame).unwrap();
-                    println!("sent frame");
-
-                    std::thread::sleep(std::time::Duration::from_millis(1000/10));
+                    std::thread::sleep(std::time::Duration::from_millis(1000/server_tickrate));
                 }
                 for y in (10..100).rev() {
                     let mut frame = TimelineFrame {
@@ -77,9 +72,7 @@ fn main() {
                     };
                     frame.character_movements.insert(0, Vec2::new(10.0, y as f32));
                     sender.send(frame).unwrap();
-                    println!("sent frame");
-
-                    std::thread::sleep(std::time::Duration::from_millis(1000/10));
+                    std::thread::sleep(std::time::Duration::from_millis(1000/server_tickrate));
                 }
             } 
         });

@@ -214,8 +214,6 @@ pub fn process_loaded_maps(
                                         },
                                         Transform::from_xyz(x, y, layer_id as f32),
                                     ));
-
-                                    println!("Entity added");
                                 }
                             }
                         }

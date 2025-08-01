@@ -21,13 +21,10 @@ pub fn alternate_frame(
 // Grabs the most recent frame and sets it as the current frame
 pub fn advance_timeline(
     mut timeline: ResMut<Timeline>,
-    frame_type: Res<FrameType>,
     mut current_frame: ResMut<TimelineFrame>,
     loop_timeline: Res<LoopTimeline>,
     mut loop_timeline_index: ResMut<LoopTimelineIndex>
 ) {
-    if *frame_type != FrameType::Action { return }
-    // println!("advancing timeline");
     if loop_timeline.0 {
         loop_timeline_index.0 += 1;
         if loop_timeline_index.0 >= timeline.0.len() {
@@ -39,8 +36,6 @@ pub fn advance_timeline(
     } else {
         if let Some(frame) = timeline.0.pop_front() {
             *current_frame = frame;
-        } else {
-            // println!("timeline is empty");
         }
     }
 }
@@ -50,11 +45,6 @@ pub fn consume_timeline(
     mut timeline: ResMut<Timeline>,
     timeline_receiver: ResMut<FrameReceiver>,
 ) {
-    println!("consuming timeline");
-    if timeline_receiver.0.is_empty() {
-        println!("timeline receiver is empty");
-        return;
-    }
     timeline.0.extend(timeline_receiver.0.try_iter());
 }
 
@@ -104,7 +94,6 @@ pub fn move_characters(
                 } else {
                     "walk_left"
                 };
-                info!("animating character {} to {} at {}, which in pixels is {}", id, animation_tag, position, position.extend(1.0) * Vec3::new(16., 16., 49.0));
                 let animation = AseAnimation {
                     aseprite: asset_server.load("player.aseprite"),
                     animation: Animation::tag(animation_tag),
