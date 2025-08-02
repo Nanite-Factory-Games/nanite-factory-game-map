@@ -76,7 +76,7 @@ pub fn move_characters(
                     // Use a quadratic easing on both endpoints.
                     EaseFunction::QuadraticInOut,
                     // Animation time.
-                    tick_rate.timestep(),
+                    tick_rate.delta(),
                     // The lens gives access to the Transform component of the Entity,
                     // for the Animator to animate it. It also contains the start and
                     // end values respectively associated with the progress ratios 0. and 1.
@@ -86,13 +86,13 @@ pub fn move_characters(
                     },
                 );
                 let animation_tag = if transform.translation.y < end.y {
-                    "walk_up"
+                    "walk_n"
                 } else  if transform.translation.y > end.y {
-                    "walk_down"
+                    "walk_s"
                 } else if transform.translation.x < end.x {
-                    "walk_right"
+                    "walk_e"
                 } else {
-                    "walk_left"
+                    "walk_w"
                 };
                 let animation = AseAnimation {
                     aseprite: asset_server.load("player.aseprite"),
@@ -139,7 +139,7 @@ pub fn animate_characters(
         if let Some(entity) = character_map.get(id) {
             let animation = AseAnimation {
                 aseprite: asset_server.load("player.aseprite"),
-                animation: Animation::tag(&animation_name),
+                animation: Animation::tag(&animation_name.0.to_string()),
             };
             commands
                 .entity(*entity)
