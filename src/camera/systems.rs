@@ -38,6 +38,7 @@ pub fn setup(mut commands: Commands, config: Res<CameraConfiguration>) {
             // maximum y position of the camera window
             max_y: f32::INFINITY,
         },
+        Msaa::Off,
         Transform::from_translation(Vec3::new(config.position.x * 16., config.position.y * 16., 0.)),
     ));
 }

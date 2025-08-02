@@ -17,7 +17,7 @@ fn main() {
         let (sender, receiver) = crossbeam_channel::unbounded::<TimelineFrame>();
 
         let mut app = nanite_factory_game_map::configure(MapConfiguration {
-            tickrate: 240,
+            tickrate: 10,
             controls_enabled: true,
             assets,
             camera_position: Vec2::new(200., 200.),
@@ -26,7 +26,7 @@ fn main() {
             canvas_id: None,
         }, receiver);
         thread::spawn(move || {
-            let server_tickrate = 240;
+            let server_tickrate = 10;
             // Walk in a square pattern indefinitely
             loop {
                 for x in 10..100 {
