@@ -11,7 +11,7 @@ opt-level = 1
 opt-level = 3
 
 [dependencies]
-bevy = {version = "0.16.1"}
+bevy = { version = "0.16.1", features = ["configurable_error_handler"] }
 bevy_ecs_tilemap = "0.16.0"
 bevy_pancam = "0.18.0"
 bevy_quick_response = "0.4.1"
@@ -24,7 +24,7 @@ serde = "1.0.219"
 serde-wasm-bindgen = "0.6.5"
 anyhow = "1.0.98"
 tracing-wasm = "0.2.1"
-bevy_aseprite_ultra = "0.6.1"
+bevy_aseprite_ultra = { git = "https://github.com/daniel-brenot/bevy_aseprite_ultra.git" }
 wasm-bindgen-futures = "0.4.50"
 ldtk_rust = { git = "https://github.com/daniel-brenot/ldtk_rust.git", features = ["bevy"] }
 serde_json = "1.0.141"

@@ -5,6 +5,7 @@ use std::{
     sync::Mutex,
     time::Duration,
 };
+use bevy::ecs::error::{GLOBAL_ERROR_HANDLER, warn};
 
 use bevy::{ecs::system::command::init_resource, log::tracing, prelude::*};
 
@@ -127,6 +128,9 @@ pub fn configure(
     configuration: MapConfiguration,
     frame_receiver: crossbeam_channel::Receiver<TimelineFrame>,
 ) -> App {
+
+    GLOBAL_ERROR_HANDLER.set(warn).expect("The error handler can only be set once, globally.");
+    
     let mut app = App::new();
 
     // Set up memory asset reader
