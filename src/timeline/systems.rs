@@ -104,7 +104,6 @@ pub fn move_characters(
                     .insert(animation);
             }
         } else {
-            info!("spawning character {} at {}", id, position);
             let mut tf = Transform::from_translation(position.extend(1.0) * Vec3::new(16., 16., 49.0));
             tf.translation.x += 8.;
             tf.translation.y += 8.;
@@ -116,7 +115,7 @@ pub fn move_characters(
                 Sprite::default(),
                 AseAnimation {
                     aseprite: asset_server.load("player.aseprite"),
-                    animation: Animation::tag("idle_down"),
+                    animation: Animation::tag("idle_s"),
                 },
             )).id();
             character_map.insert(*id, entity);

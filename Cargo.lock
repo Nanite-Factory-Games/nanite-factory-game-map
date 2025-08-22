@@ -489,7 +489,7 @@ dependencies = [
 [[package]]
 name = "bevy_aseprite_ultra"
 version = "0.6.1"
-source = "git+https://github.com/daniel-brenot/bevy_aseprite_ultra.git#2269e46bf064df0f32b557e1ad3139585f6a7b73"
+source = "git+https://github.com/Lommix/bevy_aseprite_ultra.git#6a3d5b7891670e8a77091101a80fcfc0d2476e22"
 dependencies = [
  "anyhow",
  "aseprite-loader",
