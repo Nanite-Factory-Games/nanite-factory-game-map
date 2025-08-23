@@ -20,6 +20,10 @@ use tilemap::tilemap;
 use timeline::{resources::TimelineFrame, timeline};
 use tracing_wasm::WASMLayerConfigBuilder;
 use wasm_bindgen::{JsObject, JsValue, prelude::wasm_bindgen};
+use bevy::asset::io::{
+    AssetSource, AssetSourceId,
+    memory::{Dir, MemoryAssetReader},
+};
 
 mod actions;
 mod camera;
@@ -29,12 +33,7 @@ mod shared;
 mod tilemap;
 pub mod timeline;
 
-use bevy::asset::io::{
-    AssetSource, AssetSourceId,
-    memory::{Dir, MemoryAssetReader},
-};
-
-use crate::entities::components::CharacterEntity;
+pub use bevy;
 
 #[derive(Resource)]
 struct MemoryDir {
