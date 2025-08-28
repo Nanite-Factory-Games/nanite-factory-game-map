@@ -5,7 +5,7 @@ use std::{
     sync::Mutex,
     time::Duration,
 };
-use bevy::ecs::error::{GLOBAL_ERROR_HANDLER, warn};
+use bevy::{app::TerminalCtrlCHandlerPlugin, ecs::error::{warn, GLOBAL_ERROR_HANDLER}};
 
 use bevy::{ecs::system::command::init_resource, log::tracing, prelude::*};
 
@@ -170,7 +170,8 @@ pub fn configure(
                 }),
                 ..default()
             })
-            .set(ImagePlugin::default_nearest()),
+            .set(ImagePlugin::default_nearest())
+            .disable::<TerminalCtrlCHandlerPlugin>(),
     );
     // app.add_plugins(EguiPlugin::default());
     // app.register_type::<CharacterEntity>();
