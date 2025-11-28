@@ -11,34 +11,52 @@ opt-level = 1
 opt-level = 3
 
 [dependencies]
-bevy = { version = "0.16.1", features = ["configurable_error_handler"] }
-bevy_ecs_tilemap = "0.16.0"
-bevy_pancam = "0.18.0"
-bevy_quick_response = "0.4.1"
-crossbeam-channel = "0.5.14"
-thiserror = "2.0.12"
-bevy_tweening = "0.13.0"
-wasm-streams = "0.4.2"
-wasm-bindgen = "0.2.100"
-serde = "1.0.219"
-serde-wasm-bindgen = "0.6.5"
-anyhow = "1.0.98"
-tracing-wasm = "0.2.1"
-bevy_aseprite_ultra = { git = "https://github.com/Lommix/bevy_aseprite_ultra.git" }
-wasm-bindgen-futures = "0.4.50"
-ldtk_rust = { git = "https://github.com/daniel-brenot/ldtk_rust.git", features = ["bevy"] }
-serde_json = "1.0.141"
-bevy-inspector-egui = "0.32.0"
-strum = { version = "0.27.2", features = ["derive"] }
-rkyv = "0.8.12"
-cfg-if = "1.0.4"
+bevy = { version = "0.16.1", features = ["configurable_error_handler"], optional = true }
+bevy_ecs_tilemap = { version = "0.16.0", optional = true }
+bevy_pancam = { version = "0.18.0", optional = true }
+bevy_quick_response = { version = "0.4.1", optional = true }
+crossbeam-channel = { version = "0.5.14", optional = true }
+thiserror = { version = "2.0.12", optional = true }
+bevy_tweening = { version = "0.13.0", optional = true }
+wasm-streams = { version = "0.4.2", optional = true }
+wasm-bindgen = { version = "0.2.100", optional = true }
+serde = { version = "1.0.219"}
+serde-wasm-bindgen = { version = "0.6.5", optional = true }
+anyhow = { version = "1.0.98", optional = true }
+tracing-wasm = { version = "0.2.1", optional = true }
+bevy_aseprite_ultra = { git = "https://github.com/Lommix/bevy_aseprite_ultra.git", optional = true }
+wasm-bindgen-futures = { version = "0.4.50", optional = true }
+ldtk_rust = { git = "https://github.com/daniel-brenot/ldtk_rust.git", features = ["bevy"], optional = true }
+serde_json = { version = "1.0.141", optional = true }
+bevy-inspector-egui = { version = "0.32.0", optional = true }
+strum = { version = "0.27.2", features = ["derive"]}
+rkyv = { version = "0.8.12"}
+cfg-if = { version = "1.0.4"}
 
 
 [features]
 default = ["atlas", "render", "app"]
 atlas = ["bevy_ecs_tilemap/atlas"]
 render = ["bevy_ecs_tilemap/render"]
-app = []
+app = [
+    "bevy",
+    "bevy_ecs_tilemap",
+    "bevy_pancam",
+    "bevy_quick_response",
+    "crossbeam-channel",
+    "thiserror",
+    "bevy_tweening",
+    "wasm-streams",
+    "wasm-bindgen",
+    "serde-wasm-bindgen",
+    "anyhow",
+    "tracing-wasm",
+    "bevy_aseprite_ultra",
+    "wasm-bindgen-futures",
+    "ldtk_rust",
+    "serde_json",
+    "bevy-inspector-egui",
+]
 
 # Hold your breath, this is a big one
 [profile.release]

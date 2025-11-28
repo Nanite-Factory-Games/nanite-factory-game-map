@@ -32,6 +32,7 @@ impl Vec2 {
         Self { x, y }
     } 
     
+    #[cfg(feature = "app")]
     pub fn extend(&self, z: f32) -> bevy::prelude::Vec3 {
         bevy::prelude::Vec3::new(self.x, self.y, z)
     }
