@@ -3,7 +3,7 @@ use bevy::{core_pipeline::core_2d::Camera2d, ecs::system::Commands, input::mouse
 use bevy_pancam::{DirectionKeys, PanCam};
 
 use crate::shared::resources::ControlsEnabled;
-use crate::CameraConfiguration;
+use crate::app::CameraConfiguration;
 
 
 pub fn setup(mut commands: Commands, config: Res<CameraConfiguration>) {

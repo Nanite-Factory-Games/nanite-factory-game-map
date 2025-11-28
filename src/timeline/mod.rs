@@ -1,11 +1,13 @@
 // This module will handle tracking and executing the timeline of the game
 use bevy::{prelude::*};
-use resources::{FrameType, LoopTimelineIndex, TimelineFrame};
+use resources::{FrameType, LoopTimelineIndex};
 use serde::{Deserialize, Deserializer};
 use std::{collections::{HashMap, VecDeque}, time::Duration};
 
 use run_conditions::*;
 use systems::*;
+
+use crate::TimelineFrame;
 
 pub mod resources;
 mod run_conditions;

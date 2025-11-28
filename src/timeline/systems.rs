@@ -1,12 +1,10 @@
-use std::time;
 
 use bevy::prelude::*;
-use bevy::log::info;
 use bevy_aseprite_ultra::prelude::{Animation, AseAnimation};
 use bevy_tweening::{lens::TransformPositionLens, Animator, Tween};
-use crate::{entities::{components::{CharacterEntity, PlayerCharacterMarker}, resources::EntityIdMap}, FrameReceiver, LoopTimeline };
+use crate::{TimelineFrame, app::{FrameReceiver, LoopTimeline}, entities::{components::{CharacterEntity, PlayerCharacterMarker}, resources::EntityIdMap}};
 
-use super::{resources::{FrameType, LoopTimelineIndex, TimelineFrame}, Timeline};
+use super::{resources::{FrameType, LoopTimelineIndex}, Timeline};
 
 // We switch between movement and animation frames on every tick
 pub fn alternate_frame(

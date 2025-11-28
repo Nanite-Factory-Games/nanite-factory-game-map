@@ -31,12 +31,14 @@ serde_json = "1.0.141"
 bevy-inspector-egui = "0.32.0"
 strum = { version = "0.27.2", features = ["derive"] }
 rkyv = "0.8.12"
+cfg-if = "1.0.4"
 
 
 [features]
-default = ["atlas", "render"]
+default = ["atlas", "render", "app"]
 atlas = ["bevy_ecs_tilemap/atlas"]
 render = ["bevy_ecs_tilemap/render"]
+app = []
 
 # Hold your breath, this is a big one
 [profile.release]

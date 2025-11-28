@@ -1,19 +1,19 @@
 
-use nanite_factory_game_map::timeline::resources::{TimelineFrame, Vec2};
 use std::path::Path;
+use nanite_factory_game_map::Vec2;
 
 fn main() {
     // We don't want to do anything if this is targeted to wasm
     #[cfg(not(all(target_arch = "wasm32", target_os = "unknown")))]
     {
         use std::{collections::HashMap, thread};
-        use nanite_factory_game_map::{get_assets_recursively, MapConfiguration};
+        use nanite_factory_game_map::{TimelineFrame, app::{MapConfiguration, get_assets_recursively}};
         // Create a hashmap of assets to the bytes of the asset for every file in the assets folder
         let mut assets = HashMap::new();
         get_assets_recursively(Path::new("assets"), &mut assets);
         let (sender, receiver) = crossbeam_channel::unbounded::<TimelineFrame>();
 
-        let mut app = nanite_factory_game_map::configure(MapConfiguration {
+        let mut app = nanite_factory_game_map::app::configure(MapConfiguration {
             tickrate: 10,
             controls_enabled: true,
             assets,
