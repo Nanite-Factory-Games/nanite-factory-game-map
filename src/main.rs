@@ -1,7 +1,5 @@
-use std::collections::HashMap;
 
-use bevy::prelude::*;
-use nanite_factory_game_map::timeline::resources::TimelineFrame;
+use nanite_factory_game_map::timeline::resources::{TimelineFrame, Vec2};
 use std::path::Path;
 
 fn main() {
@@ -9,7 +7,6 @@ fn main() {
     #[cfg(not(all(target_arch = "wasm32", target_os = "unknown")))]
     {
         use std::{collections::HashMap, thread};
-        use bevy::prelude::*;
         use nanite_factory_game_map::{get_assets_recursively, MapConfiguration};
         // Create a hashmap of assets to the bytes of the asset for every file in the assets folder
         let mut assets = HashMap::new();
@@ -20,7 +17,7 @@ fn main() {
             tickrate: 10,
             controls_enabled: true,
             assets,
-            camera_position: Vec2::new(200., 200.),
+            camera_position: bevy::prelude::Vec2::new(200., 200.),
             loop_timeline: false,
             follow_id: None,
             canvas_id: None,
@@ -30,6 +27,7 @@ fn main() {
             // Walk in a square pattern indefinitely
             loop {
                 for x in 10..100 {
+
                     let mut frame = TimelineFrame {
                         character_movements: HashMap::new(),
                         character_actions: HashMap::new(),

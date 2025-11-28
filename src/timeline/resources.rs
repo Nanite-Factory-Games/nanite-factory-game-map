@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use super::utils::string_key_map;
-use bevy::prelude::*;
+use bevy::ecs::resource::Resource;
 use serde::{Deserialize, Serialize};
 use strum::EnumString;
 
@@ -13,7 +13,7 @@ pub enum FrameType {
     Action
 }
 
-#[derive(Clone, Serialize, Deserialize, EnumString, strum::Display)]
+#[derive(Clone, Serialize, Deserialize, EnumString, strum::Display, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
 #[strum(serialize_all = "lowercase")]
 pub enum Action {
     #[serde(rename = "fishing")]
@@ -47,7 +47,23 @@ impl Action {
     }
 }
 
-#[derive(Resource, Default, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone)]
+pub struct Vec2 {
+    pub x: f32,
+    pub y: f32,
+}
+
+impl Vec2 {
+    pub fn new(x: f32, y: f32) -> Self {
+        Self { x, y }
+    }
+    
+    pub fn extend(&self, z: f32) -> bevy::prelude::Vec3 {
+        bevy::prelude::Vec3::new(self.x, self.y, z)
+    }
+}
+
+#[derive(Resource, Default, Deserialize, Clone, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
 pub struct TimelineFrame {
     // List of ids of characters that moved and their new positions
     #[serde(deserialize_with = "string_key_map")]
