@@ -24,7 +24,7 @@ serde = { version = "1.0.219"}
 serde-wasm-bindgen = { version = "0.6.5", optional = true }
 anyhow = { version = "1.0.98", optional = true }
 tracing-wasm = { version = "0.2.1", optional = true }
-bevy_aseprite_ultra = { git = "https://github.com/Lommix/bevy_aseprite_ultra.git", optional = true }
+bevy_aseprite_ultra = { git = "https://github.com/Lommix/bevy_aseprite_ultra.git", rev = "6a3d5b7891670e8a77091101a80fcfc0d2476e22", optional = true }
 wasm-bindgen-futures = { version = "0.4.50", optional = true }
 ldtk_rust = { git = "https://github.com/daniel-brenot/ldtk_rust.git", features = ["bevy"], optional = true }
 serde_json = { version = "1.0.141", optional = true }
