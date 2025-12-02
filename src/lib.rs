@@ -17,10 +17,6 @@ cfg_if::cfg_if! {
     }
 }
 
-
-
-
-
 #[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Serialize, Deserialize)]
 pub struct Vec2 {
     pub x: f32,
@@ -36,6 +32,46 @@ impl Vec2 {
     pub fn extend(&self, z: f32) -> bevy::prelude::Vec3 {
         bevy::prelude::Vec3::new(self.x, self.y, z)
     }
+}
+
+#[derive(Deserialize)]
+pub struct MapConfiguration {
+    pub tickrate: u64,
+    pub controls_enabled: bool,
+    pub assets: HashMap<String, Vec<u8>>,
+    pub camera_position: Vec2,
+    /// The id of the character entity to follow
+    pub follow_id: Option<u64>,
+    pub canvas_id: Option<String>,
+    pub loop_timeline: bool,
+}
+
+impl MapConfiguration {
+    pub fn new(
+        tickrate: u64,
+        controls_enabled: bool,
+        assets: HashMap<String, Vec<u8>>,
+        follow_id: Option<u64>,
+        canvas_id: Option<String>,
+        loop_timeline: bool,
+    ) -> MapConfiguration {
+        MapConfiguration {
+            tickrate,
+            controls_enabled,
+            assets,
+            camera_position: Vec2::new(0., 0.),
+            follow_id,
+            canvas_id,
+            loop_timeline,
+        }
+    }
+}
+
+/// Events to control how the map behaves
+pub enum MapEvent {
+    TimelineFrame(TimelineFrame),
+    ClearTimeline,
+    UpdateConfiguration(MapConfiguration),
 }
 
 #[derive(Default, Clone, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Serialize, Deserialize)]

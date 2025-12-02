@@ -8,7 +8,7 @@ use bevy::ecs::error::{GLOBAL_ERROR_HANDLER, warn};
 
 use bevy::{log::tracing, prelude::*};
 
-use crate::{TimelineFrame, actions::actions};
+use crate::{MapConfiguration, MapEvent, TimelineFrame, actions::actions};
 use bevy_inspector_egui::{bevy_egui::EguiPlugin, quick::{FilterQueryInspectorPlugin, WorldInspectorPlugin}, DefaultInspectorConfigPlugin};
 use crate::camera::camera;
 use crate::entities::entities;
@@ -23,8 +23,6 @@ use bevy::asset::io::{
     AssetSource, AssetSourceId,
     memory::{Dir, MemoryAssetReader},
 };
-
-
 
 pub use bevy;
 
@@ -42,38 +40,7 @@ struct Timeline(VecDeque<TimelineFrame>);
 #[derive(Resource)]
 pub struct LoopTimeline(pub bool);
 
-#[derive(Deserialize)]
-pub struct MapConfiguration {
-    pub tickrate: u64,
-    pub controls_enabled: bool,
-    pub assets: HashMap<String, Vec<u8>>,
-    pub camera_position: Vec2,
-    /// The id of the character entity to follow
-    pub follow_id: Option<u64>,
-    pub canvas_id: Option<String>,
-    pub loop_timeline: bool,
-}
 
-impl MapConfiguration {
-    pub fn new(
-        tickrate: u64,
-        controls_enabled: bool,
-        assets: HashMap<String, Vec<u8>>,
-        follow_id: Option<u64>,
-        canvas_id: Option<String>,
-        loop_timeline: bool,
-    ) -> MapConfiguration {
-        MapConfiguration {
-            tickrate,
-            controls_enabled,
-            assets,
-            camera_position: Vec2::new(0., 0.),
-            follow_id,
-            canvas_id,
-            loop_timeline,
-        }
-    }
-}
 
 #[derive(Deserialize, Resource)]
 pub struct CameraConfiguration {
@@ -88,8 +55,11 @@ pub struct MapConfigurationUpdate {
     pub camera_position: Option<Vec2>,
 }
 
-// Staric crossbeam channel sender
+/// Staric crossbeam channel sender
 static FRAME_SENDER: Mutex<Option<crossbeam_channel::Sender<TimelineFrame>>> = Mutex::new(None);
+
+/// Static crossbeam channel sender for events
+static EVENT_SENDER: Mutex<Option<crossbeam_channel::Sender<MapEvent>>> = Mutex::new(None);
 
 fn register(app: &mut App) {
     app.add_plugins(actions)
@@ -150,8 +120,9 @@ pub fn configure(
     // Set wether the timeline should loop
     app.insert_resource(LoopTimeline(configuration.loop_timeline));
 
-    app.insert_resource(CameraConfiguration { position: configuration.camera_position });
-
+    app.insert_resource(CameraConfiguration {
+        position: bevy::prelude::Vec2{ x: configuration.camera_position.x, y: configuration.camera_position.y }
+    });
 
     // Create the window
     app.add_plugins(
@@ -226,4 +197,18 @@ pub fn submit_timeline_frame(frame: JsValue) {
             error!("Error thrown when deserializing timeline frame: {:?}", e);
         }
     }
+}
+
+#[wasm_bindgen]
+pub fn clear_timeline() {
+    let event_lock = EVENT_SENDER.lock().unwrap();
+    event_lock.as_ref().unwrap().send(MapEvent::ClearTimeline).unwrap();
+
+}
+
+#[wasm_bindgen]
+pub fn update_configuration(configuration: JsValue) {
+    let event_lock = EVENT_SENDER.lock().unwrap();
+    let configuration = serde_wasm_bindgen::from_value::<MapConfiguration>(configuration).unwrap();
+    event_lock.as_ref().unwrap().send(MapEvent::UpdateConfiguration(configuration)).unwrap();
 }
