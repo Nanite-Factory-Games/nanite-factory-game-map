@@ -1,7 +1,6 @@
 use bevy::prelude::*;
 
 pub mod events;
-pub mod resources;
 
 pub fn shared(app: &mut App) {
     app

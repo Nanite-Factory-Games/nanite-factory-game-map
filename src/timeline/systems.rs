@@ -2,7 +2,7 @@
 use bevy::prelude::*;
 use bevy_aseprite_ultra::prelude::{Animation, AseAnimation};
 use bevy_tweening::{lens::TransformPositionLens, Animator, Tween};
-use crate::{TimelineFrame, app::{FrameReceiver, LoopTimeline}, entities::{components::{CharacterEntity, PlayerCharacterMarker}, resources::EntityIdMap}};
+use crate::{TimelineFrame, app::LoopTimeline, entities::{components::{CharacterEntity, PlayerCharacterMarker}, resources::EntityIdMap}, remote::resources::FrameReceiver};
 
 use super::{resources::{FrameType, LoopTimelineIndex}, Timeline};
 

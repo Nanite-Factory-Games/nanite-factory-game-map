@@ -32,6 +32,8 @@ bevy-inspector-egui = { version = "0.32.0", optional = true }
 strum = { version = "0.27.2", features = ["derive"]}
 rkyv = { version = "0.8.12"}
 cfg-if = { version = "1.0.4"}
+ewebsock = "0.8.0"
+wasm_result = { path = "wasm_result" }
 
 
 [features]

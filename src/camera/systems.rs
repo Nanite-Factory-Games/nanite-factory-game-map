@@ -2,11 +2,10 @@ use bevy::prelude::*;
 use bevy::{core_pipeline::core_2d::Camera2d, ecs::system::Commands, input::mouse::MouseButton};
 use bevy_pancam::{DirectionKeys, PanCam};
 
-use crate::shared::resources::ControlsEnabled;
-use crate::app::CameraConfiguration;
+use crate::app::MapConfigurationUpdate;
 
 
-pub fn setup(mut commands: Commands, config: Res<CameraConfiguration>) {
+pub fn setup(mut commands: Commands, config: Res<MapConfigurationUpdate>) {
     commands.spawn((
         Camera2d,
         PanCam {
@@ -39,17 +38,23 @@ pub fn setup(mut commands: Commands, config: Res<CameraConfiguration>) {
             max_y: f32::INFINITY,
         },
         Msaa::Off,
-        Transform::from_translation(Vec3::new(config.position.x * 16., config.position.y * 16., 0.)),
+        Transform::from_translation(Vec3::new(config.camera_position.x * 16., config.camera_position.y * 16., 0.)),
     ));
 }
 
-pub fn on_controls_enabled_change(
-    mut query: Query<&mut PanCam>,
-    controls_enabled: Res<ControlsEnabled>,
+/// Updates camera position when the resource is updated
+pub fn on_configuration_change(
+    mut query: Query<(&mut Transform, &mut PanCam)>,
+    config: Res<MapConfigurationUpdate>,
 ) {
-    if controls_enabled.0 {
-        for mut pancam in query.iter_mut() {
-            pancam.enabled = true;
+    if !config.is_changed() { return; }
+    for (mut transform, mut pancam) in query.iter_mut() {
+        // Update camera position
+        *transform = Transform::from_translation(Vec3::new(config.camera_position.x * 16., config.camera_position.y * 16., 0.));
+        
+        // Update controls enabled
+        if let Some(controls_enabled) = config.controls_enabled {
+            pancam.enabled = controls_enabled;
         }
     }
 }

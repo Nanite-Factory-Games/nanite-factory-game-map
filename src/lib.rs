@@ -9,6 +9,7 @@ cfg_if::cfg_if! {
         mod actions;
         mod camera;
         mod entities;
+        mod remote;
         mod selection;
         mod shared;
         mod tilemap;
@@ -34,15 +35,21 @@ impl Vec2 {
     }
 }
 
-#[derive(Deserialize)]
+#[derive(Clone, Serialize, Deserialize, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
+pub struct ServerInfo {
+    pub url: String,
+    pub token: Option<String>
+}
+
+pub type MapAssets = HashMap<String, Vec<u8>>;
+
+#[derive(Clone, Serialize, Deserialize, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
 pub struct MapConfiguration {
     pub tickrate: u64,
     pub controls_enabled: bool,
-    pub assets: HashMap<String, Vec<u8>>,
     pub camera_position: Vec2,
     /// The id of the character entity to follow
     pub follow_id: Option<u64>,
-    pub canvas_id: Option<String>,
     pub loop_timeline: bool,
 }
 
@@ -50,28 +57,28 @@ impl MapConfiguration {
     pub fn new(
         tickrate: u64,
         controls_enabled: bool,
-        assets: HashMap<String, Vec<u8>>,
         follow_id: Option<u64>,
-        canvas_id: Option<String>,
         loop_timeline: bool,
     ) -> MapConfiguration {
         MapConfiguration {
             tickrate,
             controls_enabled,
-            assets,
             camera_position: Vec2::new(0., 0.),
             follow_id,
-            canvas_id,
             loop_timeline,
         }
     }
 }
 
 /// Events to control how the map behaves
+#[derive(Clone, Serialize, Deserialize, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
 pub enum MapEvent {
     TimelineFrame(TimelineFrame),
     ClearTimeline,
     UpdateConfiguration(MapConfiguration),
+    UpdateServerInfo(ServerInfo),
+    UpdateAssets(MapAssets),
+    ConnectionClosed,
 }
 
 #[derive(Default, Clone, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Serialize, Deserialize)]

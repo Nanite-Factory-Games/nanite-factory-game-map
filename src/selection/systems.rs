@@ -1,7 +1,8 @@
 use bevy::prelude::*;
 use bevy_ecs_tilemap::tiles::TilePos;
+use bevy_pancam::PanCam;
 
-use crate::shared::{events::{TileClickEvent, TileDownEvent, TileUpEvent}, resources::ControlsEnabled};
+use crate::shared::{events::{TileClickEvent, TileDownEvent, TileUpEvent}};
 
 use super::{components::{SelectionBoxDrawing, SelectionBoxMarker}, events::SelectionEvent};
 
@@ -20,11 +21,11 @@ pub fn tile_down_handler(
     mut box_drawing: ResMut<SelectionBoxDrawing>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
-    controls_enabled: Res<ControlsEnabled>,
+    q_pancam: Query<&PanCam>,
     q_window: Query<&Window>,
     q_camera: Query<(&Camera, &GlobalTransform)>,
 ) -> Result<(), BevyError> {
-    if controls_enabled.0 == false { return Ok(()); }
+    if q_pancam.single()?.enabled == false { return Ok(()); }
     if let Some(event) = events.read().filter(|event| event.button == PointerButton::Primary).last() {
         let window = q_window.single()?;
 
