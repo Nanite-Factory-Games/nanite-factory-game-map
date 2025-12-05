@@ -2,7 +2,7 @@
 use bevy::prelude::*;
 use bevy_aseprite_ultra::prelude::{Animation, AseAnimation};
 use bevy_tweening::{lens::TransformPositionLens, Animator, Tween};
-use crate::{TimelineFrame, app::LoopTimeline, entities::{components::{CharacterEntity, PlayerCharacterMarker}, resources::EntityIdMap}, remote::resources::FrameReceiver};
+use crate::{MapConfiguration, TimelineFrame, entities::{components::{CharacterEntity, PlayerCharacterMarker}, resources::EntityIdMap}, remote::resources::FrameReceiver};
 
 use super::{resources::{FrameType, LoopTimelineIndex}, Timeline};
 
@@ -20,10 +20,10 @@ pub fn alternate_frame(
 pub fn advance_timeline(
     mut timeline: ResMut<Timeline>,
     mut current_frame: ResMut<TimelineFrame>,
-    loop_timeline: Res<LoopTimeline>,
+    map_configuration: Res<MapConfiguration>,
     mut loop_timeline_index: ResMut<LoopTimelineIndex>
 ) {
-    if loop_timeline.0 {
+    if map_configuration.loop_timeline {
         loop_timeline_index.0 += 1;
         if loop_timeline_index.0 >= timeline.0.len() {
             loop_timeline_index.0 = 0;

@@ -10,3 +10,6 @@ pub struct FrameReceiver(pub crossbeam_channel::Receiver<TimelineFrame>);
 
 #[derive(Resource)]
 pub struct EventReceiver(pub crossbeam_channel::Receiver<MapEvent>);
+
+#[derive(Resource)]
+pub struct EventSender(pub Option<ewebsock::WsSender>);

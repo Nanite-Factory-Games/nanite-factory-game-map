@@ -15,6 +15,7 @@ cfg_if::cfg_if! {
         mod tilemap;
 
         pub mod timeline;
+        mod wasm_api;
     }
 }
 
@@ -44,6 +45,7 @@ pub struct ServerInfo {
 pub type MapAssets = HashMap<String, Vec<u8>>;
 
 #[derive(Clone, Serialize, Deserialize, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
+#[cfg_attr(feature = "app", derive(bevy::ecs::resource::Resource))]
 pub struct MapConfiguration {
     pub tickrate: u64,
     pub controls_enabled: bool,

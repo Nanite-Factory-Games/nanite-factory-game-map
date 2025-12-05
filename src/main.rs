@@ -10,8 +10,7 @@ fn main() -> anyhow::Result<()> {
         let default_address = "127.0.0.1:8080".to_string();
         let address = args.get(1).unwrap_or(&default_address).clone();
 
-        start_from_server_info(address, None, None)
-            .map_err(|e| anyhow::anyhow!("Error starting from server info: {:?}", e))?;
+        start_from_server_info(address, None, None)?;
     }
     Ok(())
 }
