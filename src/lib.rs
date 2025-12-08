@@ -8,9 +8,10 @@ cfg_if::cfg_if! {
     if #[cfg(feature = "app")] {
         pub mod app;
         mod actions;
+        mod asset_reader;
         mod camera;
         mod entities;
-        mod remote;
+        pub mod remote;
         mod selection;
         mod shared;
         mod tilemap;

@@ -6,9 +6,6 @@ use crate::{MapEvent, TimelineFrame};
 pub struct WsSender(pub Option<ewebsock::WsSender>);
 
 #[derive(Resource)]
-pub struct FrameReceiver(pub crossbeam_channel::Receiver<TimelineFrame>);
-
-#[derive(Resource)]
 pub struct EventReceiver(pub crossbeam_channel::Receiver<MapEvent>);
 
 #[derive(Resource)]

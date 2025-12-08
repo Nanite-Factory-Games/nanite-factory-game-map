@@ -1,12 +1,12 @@
 use std::{
     collections::{HashMap, VecDeque},
-    path::Path,
+    path::{Path, PathBuf},
     sync::Mutex,
     time::Duration,
 };
 use bevy::ecs::error::{GLOBAL_ERROR_HANDLER, warn};
 
-use bevy::{log::tracing, prelude::*};
+use bevy::{log::{tracing, LogPlugin}, prelude::*};
 
 use crate::{MapAssets, MapConfiguration, MapEvent, TimelineFrame, actions::actions, remote::{self, remote, resources::{EventReceiver, EventSender}}, shared::shared};
 use bevy_inspector_egui::{bevy_egui::EguiPlugin, quick::{FilterQueryInspectorPlugin, WorldInspectorPlugin}, DefaultInspectorConfigPlugin};
@@ -22,8 +22,8 @@ use bevy::asset::io::{
     AssetSource, AssetSourceId,
     memory::{Dir, MemoryAssetReader},
 };
+use crate::asset_reader::NormalizingMemoryAssetReader;
 use anyhow::{Result, bail};
-use wasm_result::wasm_result;
 
 pub use bevy;
 
@@ -35,11 +35,13 @@ struct MemoryDir {
 #[derive(Resource)]
 struct Timeline(VecDeque<TimelineFrame>);
 
-#[derive(Resource)]
 pub struct ServerInfo{
     pub url: String,
     pub token: Option<String>
 }
+
+#[derive(Resource)]
+pub struct ServerOptInfo(pub Option<ServerInfo>);
 
 #[derive(Deserialize)]
 pub struct MapAssetsUpdate(pub HashMap<String, Vec<u8>>);
@@ -80,10 +82,23 @@ fn configure(
     }
     
     // We only do in memory assets, but maybe in the future we'll load remote
+    // Create normalizing readers that handle relative paths (e.g., map/../sprites/...)
+    let memory_reader = NormalizingMemoryAssetReader::new(reader.clone());
+    let default_reader = NormalizingMemoryAssetReader::new(reader.clone());
+    
+    // Register memory source with "memory" prefix
     app.register_asset_source(
         AssetSourceId::from_static("memory"),
-        AssetSource::build().with_reader(move || Box::new(reader.clone())),
+        AssetSource::build().with_reader(move || Box::new(memory_reader.clone())),
     );
+    
+    // Register memory source as the default BEFORE DefaultPlugins
+    // This ensures all asset loads without a prefix use memory instead of file system
+    app.register_asset_source(
+        AssetSourceId::default(),
+        AssetSource::build().with_reader(move || Box::new(default_reader.clone())),
+    );
+    
     app.insert_resource(memory_dir);
 
     // Set up the event receiver
@@ -100,9 +115,17 @@ fn configure(
     // Set up the configuration
     app.insert_resource(configuration);
 
+    // Set the server info to none. Configure this later to haave reconnection support
+    app.insert_resource(ServerOptInfo(None));
+
     // Create the window
     app.add_plugins(
         DefaultPlugins
+            .set(LogPlugin {
+                filter: "info".into(),
+                level: bevy::log::Level::INFO,
+                custom_layer: |_app| None,
+            })
             .set(WindowPlugin {
                 primary_window: Some(Window {
                     canvas: canvas_id,
@@ -154,25 +177,49 @@ pub fn submit_timeline_frame(frame: JsValue) -> Result<()> {
 
 /// Gets the configuration from the server and starts the app.
 pub fn start_from_server_info(url: String, token: Option<String>, canvas_id: Option<String>) -> Result<()> {
+    // Initialize logging early so info! macros work before the app starts
+    #[cfg(not(all(target_arch = "wasm32", target_os = "unknown")))]
+    {
+        use tracing_subscriber::prelude::*;
+        use tracing_subscriber::{fmt, EnvFilter};
+        let filter = EnvFilter::try_from_default_env()
+            .unwrap_or_else(|_| EnvFilter::new("info"));
+        tracing_subscriber::registry()
+            .with(fmt::layer())
+            .with(filter)
+            .init();
+    }
+    
     // Initialize websocket and get the receiver for MapEvent messages
     let (event_tx, event_rx) = remote::websocket::init_websocket(url.clone(), token)?;
+    info!("Initialized websocket");
     // Wait for the configuration event
+    info!("Waiting for configuration event");
     let event = event_rx.recv()
         .map_err(|_e| anyhow::anyhow!("Failed to connect and receive event from: {}", &url))?; 
+    info!("Received configuration event");
     let map_configuration = if let MapEvent::UpdateConfiguration(configuration) = event {
         configuration
     } else {
         bail!("Received invalid event while waiting for configuration");
     };
+    info!("Waiting for assets event");
     // Get the assets event
     let event = event_rx.recv()
         .map_err(|e| anyhow::anyhow!("Failed to receive event: {:?}", e))?; 
+    info!("Received assets event");
     let assets = if let MapEvent::UpdateAssets(assets) = event {
         assets
     } else {
         bail!("Received invalid event while waiting for assets");
     };
+    info!("Starting app");
     let mut app = configure(map_configuration, assets, canvas_id, event_rx, Some(event_tx));
+    // Set the server info so reconnections can haappen
+    app.insert_resource(ServerOptInfo(Some(ServerInfo {
+        url,
+        token: None,
+    })));
     app.run();
     Ok(())
 }

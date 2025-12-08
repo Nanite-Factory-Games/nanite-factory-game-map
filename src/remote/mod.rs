@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use crate::remote::{resources::WsSender, systems::process_incomming_events};
 
 pub mod resources;
-mod systems;
+pub mod systems;
 pub mod websocket;
 
 pub fn remote(app: &mut App) {

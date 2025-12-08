@@ -2,7 +2,7 @@
 use bevy::prelude::*;
 use bevy_aseprite_ultra::prelude::{Animation, AseAnimation};
 use bevy_tweening::{lens::TransformPositionLens, Animator, Tween};
-use crate::{MapConfiguration, TimelineFrame, entities::{components::{CharacterEntity, PlayerCharacterMarker}, resources::EntityIdMap}, remote::resources::FrameReceiver};
+use crate::{MapConfiguration, TimelineFrame, entities::{components::{CharacterEntity, PlayerCharacterMarker}, resources::EntityIdMap}};
 
 use super::{resources::{FrameType, LoopTimelineIndex}, Timeline};
 
@@ -36,14 +36,6 @@ pub fn advance_timeline(
             *current_frame = frame;
         }
     }
-}
-
-/// Grabs all frames from the timeline frame sender and adds them to the timeline
-pub fn consume_timeline(
-    mut timeline: ResMut<Timeline>,
-    timeline_receiver: ResMut<FrameReceiver>,
-) {
-    timeline.0.extend(timeline_receiver.0.try_iter());
 }
 
 pub fn move_characters(
@@ -93,7 +85,7 @@ pub fn move_characters(
                     "walk_w"
                 };
                 let animation = AseAnimation {
-                    aseprite: asset_server.load("player.aseprite"),
+                    aseprite: asset_server.load("memory://player.aseprite"),
                     animation: Animation::tag(animation_tag),
                 };
                 commands
@@ -112,7 +104,7 @@ pub fn move_characters(
                 },
                 Sprite::default(),
                 AseAnimation {
-                    aseprite: asset_server.load("player.aseprite"),
+                    aseprite: asset_server.load("memory://player.aseprite"),
                     animation: Animation::tag("idle_s"),
                 },
             )).id();
@@ -135,7 +127,7 @@ pub fn animate_characters(
     current_frame.character_actions.iter().for_each(|(id, animation_name)| {
         if let Some(entity) = character_map.get(id) {
             let animation = AseAnimation {
-                aseprite: asset_server.load("player.aseprite"),
+                aseprite: asset_server.load("memory://player.aseprite"),
                 animation: Animation::tag(&animation_name.0.to_string()),
             };
             commands
