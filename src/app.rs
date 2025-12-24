@@ -190,6 +190,16 @@ pub fn start_from_server_info(url: String, token: Option<String>, canvas_id: Opt
             .init();
     }
     
+    // Initialize rustls crypto provider before any TLS operations
+    // With the 'ring' feature enabled in Cargo.toml, rustls will automatically
+    // use ring as the crypto provider, but we explicitly set it to be safe
+    #[cfg(not(all(target_arch = "wasm32", target_os = "unknown")))]
+    {
+        rustls::crypto::ring::default_provider()
+            .install_default()
+            .expect("Failed to install default rustls crypto provider");
+    }
+    
     // Initialize websocket and get the receiver for MapEvent messages
     let (event_tx, event_rx) = remote::websocket::init_websocket(url.clone(), token)?;
     info!("Initialized websocket");
@@ -201,7 +211,7 @@ pub fn start_from_server_info(url: String, token: Option<String>, canvas_id: Opt
     let map_configuration = if let MapEvent::UpdateConfiguration(configuration) = event {
         configuration
     } else {
-        bail!("Received invalid event while waiting for configuration");
+        bail!("Received invalid event while waiting for configuration: {:#?}", event);
     };
     info!("Waiting for assets event");
     // Get the assets event

@@ -26,7 +26,7 @@ pub fn init_websocket(url: String, token: Option<String>) -> anyhow::Result<(ewe
         handle_event(event, &sender_clone)
     };
     // Construct the sender and cache it in the thread local variable so we can send messages to it
-    let sender = ewebsock::ws_connect(format!("ws://{url}"), options, Box::new(handle_event_closure)).map_err(|e| anyhow::anyhow!("Failed to connect to websocket: {}", e))?;
+    let sender = ewebsock::ws_connect(url, options, Box::new(handle_event_closure)).map_err(|e| anyhow::anyhow!("Failed to connect to websocket: {}", e))?;
     info!("Connected to websocket");
     Ok((sender, event_receiver))
 }
@@ -60,6 +60,7 @@ fn handle_event_inner(event: WsEvent, event_sender: &Sender<MapEvent>) -> anyhow
             }
         },
         Error(error) => {
+            error!("Error in websocket: {:?}", error);
             event_sender.send(MapEvent::ConnectionClosed).context("Failed to send ConnectionClosed event to channel")?
         },
         Opened => info!("Opened socket"),

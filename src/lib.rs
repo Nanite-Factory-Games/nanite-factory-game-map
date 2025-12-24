@@ -21,7 +21,7 @@ cfg_if::cfg_if! {
     }
 }
 
-#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Serialize, Deserialize)]
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Serialize, Deserialize, Debug)]
 pub struct Vec2 {
     pub x: f32,
     pub y: f32,
@@ -38,7 +38,7 @@ impl Vec2 {
     }
 }
 
-#[derive(Clone, Serialize, Deserialize, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
+#[derive(Clone, Serialize, Deserialize, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Debug)]
 pub struct ServerInfo {
     pub url: String,
     pub token: Option<String>
@@ -46,7 +46,7 @@ pub struct ServerInfo {
 
 pub type MapAssets = HashMap<String, Vec<u8>>;
 
-#[derive(Clone, Serialize, Deserialize, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
+#[derive(Clone, Serialize, Deserialize, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Debug)]
 #[cfg_attr(feature = "app", derive(bevy::ecs::resource::Resource))]
 pub struct MapConfiguration {
     pub tickrate: u64,
@@ -75,7 +75,7 @@ impl MapConfiguration {
 }
 
 /// Events to control how the map behaves
-#[derive(Clone, Serialize, Deserialize, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
+#[derive(Clone, Serialize, Deserialize, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Debug)]
 pub enum MapEvent {
     TimelineFrame(TimelineFrame),
     ClearTimeline,
@@ -85,7 +85,7 @@ pub enum MapEvent {
     ConnectionClosed,
 }
 
-#[derive(Default, Clone, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Serialize, Deserialize)]
+#[derive(Default, Clone, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Serialize, Deserialize, Debug)]
 #[cfg_attr(feature = "app", derive(bevy::ecs::resource::Resource))]
 pub struct TimelineFrame {
     // List of ids of characters that moved and their new positions
@@ -98,7 +98,7 @@ pub struct TimelineFrame {
     pub npc_actions: HashMap<u64, (Action, Vec2)>,
 }
 
-#[derive(Clone, Serialize, Deserialize, EnumString, strum::Display, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
+#[derive(Clone, Serialize, Deserialize, EnumString, strum::Display, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Debug)]
 #[strum(serialize_all = "lowercase")]
 pub enum Action {
     #[serde(rename = "fishing")]

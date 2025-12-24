@@ -7,7 +7,7 @@ fn main() -> anyhow::Result<()> {
         use nanite_factory_game_map::{app::{start_from_server_info}};
         // Get the address and port from the cli arguments, defaulting to 127.0.0.1:8080
         let args: Vec<String> = std::env::args().collect();
-        let default_address = "127.0.0.1:8080".to_string();
+        let default_address = "ws://127.0.0.1:8080".to_string();
         let address = args.get(1).unwrap_or(&default_address).clone();
 
         start_from_server_info(address, None, None)?;

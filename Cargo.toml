@@ -32,9 +32,10 @@ bevy-inspector-egui = { version = "0.32.0", optional = true }
 strum = { version = "0.27.2", features = ["derive"]}
 rkyv = { version = "0.8.12"}
 cfg-if = { version = "1.0.4"}
-ewebsock = "0.8.0"
+ewebsock = {version = "0.8.0", features = ["tls"]}
 tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
 wasm_result = { path = "wasm_result" }
+rustls = { version = "0.23.35", features = ["ring"] }
 
 
 [features]
