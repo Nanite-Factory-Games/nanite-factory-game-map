@@ -1,148 +1,26 @@
 use std::collections::HashMap;
 use std::path::Path;
+use bevy::math::Vec2;
 use cfg_if;
 use serde::{Serialize, Deserialize};
-use strum::EnumString;
 
-cfg_if::cfg_if! {
-    if #[cfg(feature = "app")] {
-        pub mod app;
-        mod actions;
-        mod asset_reader;
-        mod camera;
-        mod entities;
-        pub mod remote;
-        mod selection;
-        mod shared;
-        mod tilemap;
+#[cfg(feature = "client")]
+pub mod client;
+// pub mod timeline;
+#[cfg(feature = "client")]
+pub mod wasm_api;
+#[cfg(feature = "server")]
+pub mod server;
 
-        pub mod timeline;
-        mod wasm_api;
-    }
-}
+pub mod shared;
 
-#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Clone, Serialize, Deserialize, Debug)]
-pub struct Vec2 {
-    pub x: f32,
-    pub y: f32,
-}
-
-impl Vec2 {
-    pub fn new(x: f32, y: f32) -> Self {
-        Self { x, y }
-    } 
-    
-    #[cfg(feature = "app")]
-    pub fn extend(&self, z: f32) -> bevy::prelude::Vec3 {
-        bevy::prelude::Vec3::new(self.x, self.y, z)
-    }
-}
-
-#[derive(Clone, Serialize, Deserialize, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Debug)]
+#[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct ServerInfo {
     pub url: String,
     pub token: Option<String>
 }
 
-pub type MapAssets = HashMap<String, Vec<u8>>;
-
-#[derive(Clone, Serialize, Deserialize, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Debug)]
-#[cfg_attr(feature = "app", derive(bevy::ecs::resource::Resource))]
-pub struct MapConfiguration {
+#[derive(bevy::ecs::resource::Resource, Clone, Serialize, Deserialize, Debug)]
+pub struct ServerConfiguration {
     pub tickrate: u64,
-    pub controls_enabled: bool,
-    pub camera_position: Vec2,
-    /// The id of the character entity to follow
-    pub follow_id: Option<u64>,
-    pub loop_timeline: bool,
-}
-
-impl MapConfiguration {
-    pub fn new(
-        tickrate: u64,
-        controls_enabled: bool,
-        follow_id: Option<u64>,
-        loop_timeline: bool,
-    ) -> MapConfiguration {
-        MapConfiguration {
-            tickrate,
-            controls_enabled,
-            camera_position: Vec2::new(0., 0.),
-            follow_id,
-            loop_timeline,
-        }
-    }
-}
-
-/// Events to control how the map behaves
-#[derive(Clone, Serialize, Deserialize, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Debug)]
-pub enum MapEvent {
-    TimelineFrame(TimelineFrame),
-    ClearTimeline,
-    UpdateConfiguration(MapConfiguration),
-    UpdateServerInfo(ServerInfo),
-    UpdateAssets(MapAssets),
-    ConnectionClosed,
-}
-
-#[derive(Default, Clone, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Serialize, Deserialize, Debug)]
-#[cfg_attr(feature = "app", derive(bevy::ecs::resource::Resource))]
-pub struct TimelineFrame {
-    // List of ids of characters that moved and their new positions
-    pub character_movements: HashMap<u64, Vec2>,
-    // List of actions that characters performed on the tick before they moved
-    pub character_actions: HashMap<u64, (Action, Vec2)>,
-    // List of NPC movements performed on the tick
-    pub npc_movements: HashMap<u64, Vec2>,
-    // List of actions that NPCs performed on the tick
-    pub npc_actions: HashMap<u64, (Action, Vec2)>,
-}
-
-#[derive(Clone, Serialize, Deserialize, EnumString, strum::Display, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize, Debug)]
-#[strum(serialize_all = "lowercase")]
-pub enum Action {
-    #[serde(rename = "fishing")]
-    Fishing,
-    #[serde(rename = "mining")]
-    Mining,
-}
-
-impl Action {
-    /// Appends _n, _e, _s, _w, or _ne ... etc to the end of the string depending on the direction
-    pub fn to_string_with_direction(&self, player_direction: Vec2, target_direction: Vec2) -> String {
-        let mut string = self.to_string();
-        if player_direction.x > 0.0 && target_direction.x < 0.0 {
-            string.push_str("_n");
-        } else if player_direction.x < 0.0 && target_direction.x > 0.0 {
-            string.push_str("_s");
-        } else if player_direction.y > 0.0 && target_direction.y < 0.0 {
-            string.push_str("_e");
-        } else if player_direction.y < 0.0 && target_direction.y > 0.0 {
-            string.push_str("_w");
-        } else if player_direction.x > 0.0 && target_direction.x < 0.0 {
-            string.push_str("_ne");
-        } else if player_direction.x < 0.0 && target_direction.x > 0.0 {
-            string.push_str("_se");
-        } else if player_direction.y > 0.0 && target_direction.y < 0.0 {
-            string.push_str("_nw");
-        } else if player_direction.y < 0.0 && target_direction.y > 0.0 {
-            string.push_str("_sw");
-        }
-        string
-    }
-}
-
-#[cfg(not(all(target_arch = "wasm32", target_os = "unknown")))]
-pub fn get_assets_recursively(path: &Path, assets: &mut HashMap<String, Vec<u8>>) {
-    for entry in std::fs::read_dir(path).unwrap() {
-        let entry = entry.unwrap();
-        if entry.path().is_dir() {
-            get_assets_recursively(&entry.path(), assets);
-        } else {
-            let path = entry.path().to_path_buf();
-            let path_string = path.to_str().unwrap().to_string().replace("assets/", "");
-            let bytes = std::fs::read(path).unwrap();
-            assets.insert(path_string.clone(), bytes);
-        }
-    }
 }

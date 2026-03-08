@@ -3,6 +3,16 @@ name = "nanite-factory-game-map"
 version = "0.1.0"
 edition = "2024"
 
+[[bin]]
+name = "server"
+path = "src/bin/server.rs"
+required-features = ["server"]
+
+[[bin]]
+name = "client"
+path = "src/bin/client.rs"
+required-features = ["client"]
+
 [profile.dev]
 opt-level = 1
 
@@ -11,56 +21,53 @@ opt-level = 1
 opt-level = 3
 
 [dependencies]
-bevy = { version = "0.16.1", features = ["configurable_error_handler"], optional = true }
-bevy_ecs_tilemap = { version = "0.16.0", optional = true }
-bevy_pancam = { version = "0.18.0", optional = true }
-bevy_quick_response = { version = "0.4.1", optional = true }
-crossbeam-channel = { version = "0.5.14", optional = true }
-thiserror = { version = "2.0.12", optional = true }
-bevy_tweening = { version = "0.13.0", optional = true }
-wasm-streams = { version = "0.4.2", optional = true }
-wasm-bindgen = { version = "0.2.100", optional = true }
+bevy = { version = "0.18.1" }
+bevy_ecs_tilemap = { version = "0.18.0", optional = true }
+bevy_pancam = { version = "0.20.0", optional = true }
+bevy_quick_response = { version = "0.6.0", optional = true }
+crossbeam-channel = { version = "0.5.14" }
+thiserror = { version = "2.0.18" }
+bevy_tweening = { version = "0.15.0", optional = true }
+wasm-bindgen = { version = "0.2.114", optional = true }
 serde = { version = "1.0.219"}
 serde-wasm-bindgen = { version = "0.6.5", optional = true }
-anyhow = { version = "1.0.98", optional = true }
+anyhow = { version = "1.0.102" }
 tracing-wasm = { version = "0.2.1", optional = true }
 bevy_aseprite_ultra = { git = "https://github.com/Lommix/bevy_aseprite_ultra.git", rev = "6a3d5b7891670e8a77091101a80fcfc0d2476e22", optional = true }
 wasm-bindgen-futures = { version = "0.4.50", optional = true }
 ldtk_rust = { git = "https://github.com/daniel-brenot/ldtk_rust.git", features = ["bevy"], optional = true }
-serde_json = { version = "1.0.141", optional = true }
-bevy-inspector-egui = { version = "0.32.0", optional = true }
+serde_json = { version = "1.0.140" }
+bevy-inspector-egui = { version = "0.36.0", optional = true }
 strum = { version = "0.27.2", features = ["derive"]}
-rkyv = { version = "0.8.12"}
 cfg-if = { version = "1.0.4"}
 ewebsock = {version = "0.8.0", features = ["tls"]}
 tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
 wasm_result = { path = "wasm_result" }
-rustls = { version = "0.23.35", features = ["ring"] }
+rustls = { version = "0.23.37", features = ["ring"] }
+lightyear = "0.26.4"
+bimap = { version = "0.6.3", features = ["serde"] }
 
 
 [features]
-default = ["atlas", "render", "app"]
-atlas = ["bevy_ecs_tilemap/atlas"]
-render = ["bevy_ecs_tilemap/render"]
-app = [
-    "bevy",
+default = ["server", "client"]
+server = ["lightyear/server", "lightyear/netcode", "lightyear/webtransport"]
+client = [
+    "atlas",
+    "render",
     "bevy_ecs_tilemap",
     "bevy_pancam",
     "bevy_quick_response",
-    "crossbeam-channel",
-    "thiserror",
     "bevy_tweening",
-    "wasm-streams",
     "wasm-bindgen",
     "serde-wasm-bindgen",
-    "anyhow",
     "tracing-wasm",
     "bevy_aseprite_ultra",
     "wasm-bindgen-futures",
     "ldtk_rust",
-    "serde_json",
-    "bevy-inspector-egui",
+    "bevy-inspector-egui"
 ]
+atlas = ["bevy_ecs_tilemap/atlas"]
+render = ["bevy_ecs_tilemap/render"]
 
 # Hold your breath, this is a big one
 [profile.release]

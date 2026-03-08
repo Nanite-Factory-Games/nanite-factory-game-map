@@ -1,10 +1,12 @@
-use bevy::prelude::*;
 
-pub mod events;
+pub mod entities;
+pub mod protocol;
 
-pub fn shared(app: &mut App) {
-    app
-        .add_event::<events::TileClickEvent>()
-        .add_event::<events::TileDownEvent>()
-        .add_event::<events::TileUpEvent>();
+#[derive(Copy, Clone, Debug)]
+pub struct SharedSettings {
+    /// An id to identify the protocol version
+    pub protocol_id: u64,
+
+    /// a 32-byte array to authenticate via the Netcode.io protocol
+    pub private_key: [u8; 32],
 }
